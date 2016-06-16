@@ -1,17 +1,44 @@
 ---
-title: "Plotly BarChart Template"
+title: "BarChart Template"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
-## Overview of Template
+## Overview of Tutorial
 
-This template demonstrates how to create an interactive bar chart with the Plotly library for a dataset structured as follows:
+This tutorial demonstrates how to create interactive barcharts like the one below using a variety of different libraries, currently including; plotly and highchart.
 
-```{r example_df}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(highcharter)
+desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960")
+measure_column <- "Desktop.Items"
+categories <- c("Operating.System","University.Department","University","Country")
+selected_dimension <- categories[1]
+aggregate_number_of_observations <- aggregate(data = desktopItems, eval(as.name(measure_column)) ~ eval(as.name(selected_dimension)), FUN = length)
+colnames(aggregate_number_of_observations) <- c(selected_dimension,"Desktop.Items")
+aggregate_number_of_observations <- aggregate_number_of_observations[order(aggregate_number_of_observations$Desktop.Items),]
+format_label <- function(dimension){
+  gsub(pattern = "[.]", replacement = " ", x = dimension)
+}
+highchart(height = 200) %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = aggregate_number_of_observations[,selected_dimension]) %>%
+  hc_add_series(name = format_label(selected_dimension), data = rev(aggregate_number_of_observations[,measure_column])) %>%
+  hc_yAxis(title = list(text = "Mean Number of Desktop Items")) %>%
+  hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
+```
+
+
+The datasets that this tutorial considers are structured as follows:
+
+```{r example_df, echo=FALSE}
 example_df <- data.frame(
   "Measure" = 1:3,
   "Category 1" = c("A","B","A"),
@@ -38,7 +65,7 @@ knitr::kable(head(desktopItems))
 
 An advanced version of this template might attempt to automatically infer the measure and appropriate categories for the data, in this template we explicitly decide which columns are categories (or dimensions) and which column is the measure:
 
-```{r define_columns}
+```{r define_columns, echo=TRUE}
 measure_column <- "Desktop.Items"
 categories <- c("Operating.System","University.Department","University","Country")
 ```
@@ -52,7 +79,7 @@ Using the `aggregate` function the mean number of desktop items per category can
 ```{r mean_aggregate}
 selected_dimension <- categories[1]
 aggregate_mean <- aggregate(data = desktopItems, eval(as.name(measure_column)) ~ eval(as.name(selected_dimension)), FUN = mean)
-aggregate_mean
+knitr::kable(aggregate_mean)
 ```
 
 For convenience in the visualisation, the column names of the `data.frame` are renamed:
@@ -61,26 +88,47 @@ For convenience in the visualisation, the column names of the `data.frame` are r
 colnames(aggregate_mean) <- c(selected_dimension, measure_column)
 ```
 
-The `data.frame` can now be visualised using `Plotly` as follows, note that `eval` is necessary as the `x` and `y` arguments are assumed to be explicit column names for the `data` provided to `plotly` - `eval` forces the evaluation of `as.name(selected_dimension)`.
-
-```{r}
-library(plotly)
-library(plotly)
-plot_ly(data = aggregate_mean,
-        type = "bar",
-        x = eval(as.name(selected_dimension)),
-        y = eval(as.name(measure_column))) %>%
-  layout(xaxis = list(title = selected_dimension),
-         yaxis = list(title = "Mean Number of Desktop Items"),
-         title = paste0("Mean number of desktop items aggregated by ",selected_dimension))
-```
-
 The column names for the categories are formatted with periods instead of spaces, i.e. Operating.System which does not aid comprehension of the chart. Using `gsub` a utility function called `format_label` is created to replace the periods:
 
 ```{r}
 format_label <- function(dimension){
   gsub(pattern = "[.]", replacement = " ", x = dimension)
 }
+```
+
+### Highcharter
+
+The `data.frame` can now be visualised using `highcharter` as follows, note that it is unnecessary to use `eval` with this library as a namespace is not defined within the context of the visualisation.
+
+```{r}
+library(highcharter)
+highchart() %>%
+  hc_chart(type = "column") %>%
+  hc_xAxis(categories = aggregate_mean[,selected_dimension]) %>%
+  hc_add_series(name = format_label(selected_dimension), data = aggregate_mean[,measure_column]) %>%
+  hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
+```
+
+
+The `highcharter` library distinguishes between horizontal and vertically orientated bar charts by `hc_chart(type = )`; column and bar are verticle and horizontal, respectively. Both varieties of chart are more legible if bars are ordered from largest to smallest, note that internal to `hc_add_series` the ordered `measure_column` is reversed to achieve this:
+
+```{r}
+aggregate_mean <- aggregate_mean[order(aggregate_mean$Desktop.Items),]
+highchart() %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = aggregate_mean[,selected_dimension]) %>%
+  hc_add_series(name = format_label(selected_dimension), data = rev(aggregate_mean[,measure_column])) %>%
+  hc_yAxis(title = list(text = "Mean Number of Desktop Items")) %>%
+  hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
+```
+
+
+### Plotly
+
+The `data.frame` can now be visualised using `Plotly` as follows, note that `eval` is necessary as the `x` and `y` arguments are assumed to be explicit column names for the `data` provided to `plotly` - `eval` forces the evaluation of `as.name(selected_dimension)`.
+
+```{r}
+library(plotly)
 plot_ly(data = aggregate_mean,
         type = "bar",
         x = eval(as.name(selected_dimension)),
@@ -90,8 +138,7 @@ plot_ly(data = aggregate_mean,
          title = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
 ```
 
-
-Often dimensions have long labels, which are best suited to horizontally orientated bar charts - noting that some other charting tools refer to vertical bar charts as "column charts". Independent of orientation, bar charts are more legible if bars are ordered from largest to smallest, as show below. Note that the left margin of the visualisation has also been extended for legibility purposes.
+Barcharts are verticle by default in the plotly library, however horizontally orientated bar charts are often more appropriate where dimension labels are long. Independent of orientation, bar charts are more legible if bars are ordered from largest to smallest, as show below. Orientation is controlled in the `plotly` library through the argument `orientation`:
 
 ```{r}
 aggregate_mean <- aggregate_mean[order(aggregate_mean$Desktop.Items),]
@@ -106,6 +153,7 @@ plot_ly(data = aggregate_mean,
          margin = list(l = 80))
 ```
 
+
 ## Number of Observations per Category
 
 The number of observations per category can be calculated with `aggregate` by applying the `FUN` length across the subset data - i.e. how long is the list of observations for each category. 
@@ -114,6 +162,23 @@ The number of observations per category can be calculated with `aggregate` by ap
 aggregate_number_of_observations <- aggregate(data = desktopItems, eval(as.name(measure_column)) ~ eval(as.name(selected_dimension)), FUN = length)
 colnames(aggregate_number_of_observations) <- c(selected_dimension,"Desktop.Items")
 ```
+
+### Highcharter
+
+Using the same code as above, a barchart of the aggregated data can easily be generated:
+
+```{r}
+aggregate_number_of_observations <- aggregate_number_of_observations[order(aggregate_number_of_observations$Desktop.Items),]
+highchart() %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = aggregate_number_of_observations[,selected_dimension]) %>%
+  hc_add_series(name = format_label(selected_dimension), data = rev(aggregate_number_of_observations[,measure_column])) %>%
+  hc_yAxis(title = list(text = "Mean Number of Desktop Items")) %>%
+  hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
+```
+
+
+### Plotly
 
 Using the same code as above, a barchart of the aggregated data can easily be generated:
 
@@ -132,7 +197,9 @@ plot_ly(data = aggregate_number_of_observations,
 
 ## Functionalising 
 
-The steps above can be functionalised relatively easily, it is adviseable to split the code into two steps: aggregation and visualisation:
+It is convenient to proceduralise the creation of these charts by converting the scripts into functions that can easily be called with different parameters, this is particularly useful for in Shiny apps. A function for each charting library considered in this document is provided below.
+
+Note that the aggregation function is the same, for this tutorial, regardless of the visualisation library used.
 
 ```{r}
 aggregate_data_for_barchart <-
@@ -165,6 +232,8 @@ intermediate_aggregate <- aggregate_data_for_barchart(
 knitr::kable(intermediate_aggregate)
 ```
 
+### Plotly
+
 The function below is used to generate a plotly bar chart from the aggregate data function, note that a number of additional arguments have been added to provide greater flexibility over the output.
 
 ```{r}
@@ -184,7 +253,7 @@ plotly_aggregated_barchart <- function(
     orientation = "h"
   ) %>%
     layout(
-      xaxis = list(title = "Number of respondants"),
+      xaxis = list(title = aggregate_description),
       yaxis = list(title = ""),
       title = paste0(
         aggregate_description," aggregated by ",
@@ -206,7 +275,40 @@ plotly_aggregated_barchart(
   aggregate_description = "Mean number of desktop items",
   displayFurniture = F
 )
-
 ```
+
+
+### Highcharter
+
+The function below is used to generate a highcharter bar chart from the aggregate data function, note that a number of additional arguments have been added to provide greater flexibility over the output.
+
+
+```{r}
+highcharter_aggregated_barchart <- function(
+  data = NA,
+  dimension_column = NA,
+  measure_column = NA,
+  aggregate_description = NA
+) {
+  highchart() %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = data[,dimension_column]) %>%
+  hc_add_series(name = format_label(dimension_column), data = rev(aggregate_number_of_observations[,measure_column])) %>%
+  hc_yAxis(title = list(text = aggregate_description)) %>%
+  hc_title(text = paste0(aggregate_description," of desktop items aggregated by ",format_label(dimension_column)))
+}
+```
+
+For example:
+
+```{r}
+highcharter_aggregated_barchart(
+  data = intermediate_aggregate,
+  dimension_column = "University",
+  measure_column = "Desktop.Items",
+  aggregate_description = "Mean number of desktop items"
+)
+```
+
 
 

@@ -9,6 +9,7 @@
 
 library(shiny)
 library(plotly)
+library(highcharter)
 
 ## =========================== Import Data --====================================
 ## ==============================================================================
@@ -44,19 +45,17 @@ aggregate_data_for_barchart <-
     colnames(aggregated_data) <- c(dimension_column, measure_column)
     
     aggregated_data <-
-      aggregated_data[order(aggregated_data[, measure_column]),]
+      aggregated_data[order(aggregated_data[, measure_column]), ]
     # Return for use
     aggregated_data
   }
 
-plotly_aggregated_barchart <- function(
-  data = NA,
-  dimension_column = NA,
-  measure_column = NA,
-  aggregate_description = NA,
-  left_margin = 100,
-  displayFurniture = T
-) {
+plotly_aggregated_barchart <- function(data = NA,
+                                       dimension_column = NA,
+                                       measure_column = NA,
+                                       aggregate_description = NA,
+                                       left_margin = 100,
+                                       displayFurniture = T) {
   plot_ly(
     data = data,
     type = "bar",
@@ -65,15 +64,35 @@ plotly_aggregated_barchart <- function(
     orientation = "h"
   ) %>%
     layout(
-      xaxis = list(title = "Number of respondants"),
+      xaxis = list(title = aggregate_description),
       yaxis = list(title = ""),
       title = paste0(
-        aggregate_description," aggregated by ",
+        aggregate_description,
+        " aggregated by ",
         format_label(dimension_column)
       ),
       margin = list(l = left_margin)
     ) %>%
     config(displayModeBar = displayFurniture)
+}
+
+highcharter_aggregated_barchart <- function(data = NA,
+                                            dimension_column = NA,
+                                            measure_column = NA,
+                                            aggregate_description = NA) {
+  highchart() %>%
+    hc_chart(type = "bar") %>%
+    hc_xAxis(categories = data[, dimension_column]) %>%
+    hc_add_series(
+      name = format_label(dimension_column),
+      data = rev(data[, measure_column])
+    ) %>%
+    hc_yAxis(title = list(text = aggregate_description)) %>%
+    hc_title(text = paste0(
+      aggregate_description,
+      " of desktop items aggregated by ",
+      format_label(dimension_column)
+    ))
 }
 
 ## =========================== Shiny Server =====================================
@@ -91,7 +110,25 @@ shinyServer(function(input, output, session) {
                 choices = dimension_columns)
   })
   
-  output$measurePlot <- renderPlotly({
+  output$measure_plot <- renderUI({
+    switch (
+      input$chart_library,
+      "highcharter" = highchartOutput("highchart_barchart"),
+      "plotly" = plotlyOutput("plotly_barchart")
+    )
+  })
+  
+  intermediate_aggregate <- reactive({
+    aggregate_data_for_barchart(
+      data = desktopItems,
+      dimension_column = input$selected_dimension,
+      measure_column = input$selected_measure,
+      aggregate_function = eval(input$aggregate_function)
+    )
+  })
+  
+  
+  output$plotly_barchart <- renderPlotly({
     if (is.null(input$selected_measure)) {
       return()
     }
@@ -100,21 +137,54 @@ shinyServer(function(input, output, session) {
       return()
     }
     
-    print("foo")
+    if (input$chart_library != "plotly") {
+      return()
+    }
     
-    intermediate_aggregate <- aggregate_data_for_barchart(
-      data = desktopItems,
-      dimension_column = input$selected_dimension,
-      measure_column = input$selected_measure,
-      aggregate_function = eval(input$aggregate_function)
-    )
+    intermediate_aggregate <- intermediate_aggregate()
     
     plotly_aggregated_barchart(
       data = intermediate_aggregate,
       dimension_column = input$selected_dimension,
       measure_column = input$selected_measure,
-      aggregate_description = "Mean number of desktop items",
+      aggregate_description =
+        switch (
+          input$aggregate_function,
+          "mean" = "Average number of desktop items",
+          "length" = "Number of respondants"
+        ),
       displayFurniture = F
+    )
+    
+  })
+  
+  output$highchart_barchart <- renderHighchart({
+    print("foo")
+    
+    if (is.null(input$selected_measure)) {
+      return()
+    }
+    
+    if (is.null(input$selected_dimension)) {
+      return()
+    }
+    
+    if (input$chart_library != "highcharter") {
+      return()
+    }
+    
+    intermediate_aggregate <- intermediate_aggregate()
+    
+    highcharter_aggregated_barchart(
+      data = intermediate_aggregate,
+      dimension_column = input$selected_dimension,
+      measure_column = input$selected_measure,
+      aggregate_description =
+        switch (
+          input$aggregate_function,
+          "mean" = "Average number of desktop items",
+          "length" = "Number of respondants"
+        )
     )
     
   })

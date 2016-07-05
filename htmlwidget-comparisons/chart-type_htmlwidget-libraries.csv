@@ -1,0 +1,16 @@
+"Library","Piechart","Barchart","Violin.Chart","Box.Whisker.Chart","Beeswarm.Chart","Gantt.Chart","Scatter.Geo","Choropleth","Scatter.Plot","Line.Plot","Function.Plot","Filled.Area.Chart","Bubble.Charts","Tabular.Data.View","Pivot.Data","Funnel.Chart","Sparklines","Time.Series","Network","Heatmap","Rectangle.Area"
+"Leaflet",0,0,0,0,0,0,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"dygraphs",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Plotly",1,1,NA,1,NA,NA,1,1,1,1,NA,1,1,NA,NA,NA,NA,1,NA,NA,NA
+"rbokeh",1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Highcharts",1,1,1,1,NA,NA,NA,NA,1,1,1,NA,NA,NA,NA,NA,NA,1,NA,NA,NA
+"visNetwork",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA
+"networkD3",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA
+"d3heatmap",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA
+"DataTables",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"threejs",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"rglwidget",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"DiagrammeR",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"MetricsGraphs",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"rAmCharts",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA,NA,NA,NA
+"rhandsontable",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA,NA,NA

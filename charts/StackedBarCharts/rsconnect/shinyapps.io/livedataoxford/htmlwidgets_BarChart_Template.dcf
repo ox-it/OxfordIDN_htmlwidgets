@@ -1,0 +1,10 @@
+name: htmlwidgets_BarChart_Template
+account: livedataoxford
+server: shinyapps.io
+appId: 108930
+bundleId: 481861
+url: https://livedataoxford.shinyapps.io/htmlwidgets_BarChart_Template/
+when: 1466079722.67122
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: BarChart_Tutorial.html|BarChart_Tutorial.Rmd

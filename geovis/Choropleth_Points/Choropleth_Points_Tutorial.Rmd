@@ -1,0 +1,35 @@
+---
+title: "htmlwidget Choropleth Points Tutorial"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(maps)
+library(mapproj)
+library(leaflet)
+library(rgdal)
+library(GISTools)
+library(sp)
+library(plyr)
+```
+
+```{r}
+## Load county borders
+uk_county_boundaries <- readOGR(dsn = "data/shapefiles/", layer = "infuse_uk_2011", verbose = F)
+```
+
+```{r}
+map <- leaflet(data = uk_county_boundaries) %>% addTiles()
+map %>% addPolygons(
+  stroke = FALSE,
+  smoothFactor = 0.2,
+  fillOpacity = 0.8,
+  # fillColor = ~ pal(var),
+  weight = 1
+)
+```
+

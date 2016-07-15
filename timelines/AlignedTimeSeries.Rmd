@@ -1,0 +1,86 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Aligning Timelines
+
+From http://stackoverflow.com/a/15019796/1659890
+
+Import data
+
+```{r}
+df<- read.csv("SF_Question.csv")
+
+date_range <- seq(as.Date("1000-01-01"), as.Date("2000-01-01"), "months")
+
+
+
+
+df <- data.frame(
+  "TIME1" = sort(sample(date_range,100)),
+  "TIME2" = sort(sample(date_range,100)),
+  "VARIABLE1" = rnorm(100, mean = 7, sd = 4),
+  "V2" = rnorm(100, mean = 4, sd = 2)
+)
+```
+
+
+Make rectangles
+
+```{r}
+rect1<- data.frame (xmin=1100, xmax=1300, ymin=-Inf, ymax=Inf)
+rect2 <- data.frame (xmin=1800, xmax=1850, ymin=-Inf, ymax=Inf)
+```
+
+Make plots
+
+```{r}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+p1<- ggplot() + geom_line(data=df, aes(TIME1, VARIABLE1)) + 
+  scale_y_reverse() + 
+  labs(x="AGE") + 
+  scale_x_date(date_breaks = "100 years", date_labels = "%Y", limits = c(as.Date("1000-01-01"),as.Date("2000-01-01"))) + 
+  # scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + 
+   # geom_rect(data=rect1,aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),alpha=0.1,fill="blue")+
+   # geom_rect(data=rect2,aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),alpha=0.1,fill="blue")+
+   theme(plot.margin = unit(c(-1,0.5,0.5,0.5), "lines"))
+
+p2<- ggplot() + geom_line(data=df, aes(TIME2, V2)) + labs(x=NULL) + 
+  scale_x_date(date_breaks = "100 years", date_labels = "%Y", limits = c(as.Date("1000-01-01"),as.Date("2000-01-01"))) + 
+  # scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + 
+  # scale_y_continuous(limits=c(-14000,10000))+
+  # geom_rect(data=rect1,aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),alpha=0.1,fill="blue")+
+  # geom_rect(data=rect2,aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),alpha=0.1,fill="blue")+
+  theme(axis.text.x=element_blank(),
+        axis.title.x=element_blank(),
+        plot.title=element_blank(),
+        axis.ticks.x=element_blank(),
+        plot.margin = unit(c(0.5,0.5,-1,0.5), "lines"))
+
+
+gp1<- ggplot_gtable(ggplot_build(p1))
+gp2<- ggplot_gtable(ggplot_build(p2))
+maxWidth = unit.pmax(gp1$widths[2:3], gp2$widths[2:3])
+gp1$widths[2:3] <- maxWidth
+gp2$widths[2:3] <- maxWidth
+class(grid.arrange(gp2, gp1))
+```
+
+### Plotly
+
+```{r}
+library(plotly)
+ggplotly(grid.arrange(gp2, gp1))
+```
+
+
+
+

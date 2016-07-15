@@ -1,0 +1,91 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ScatterGeo
+
+Use this data source: https://ndownloader.figshare.com/files/5360966
+
+Find out about the libraries here: http://www.htmlwidgets.org/showcase_leaflet.html
+
+## Leaflet
+
+This code chunk shows how to import the data from figshare.
+```{r, echo=TRUE}
+University_Data <- read.csv(file= "https://ndownloader.figshare.com/files/5360966")
+colnames(University_Data) <- c("University", "Latitude", "Longitude")
+```
+
+
+This code chunk shows how I first got rid of row 14 as it was a duplicate of another row.
+```{r, echo=TRUE}
+University_Data2 <- University_Data[1:13,]
+University_Data2 
+End_Uni <- University_Data[15:16,]
+university_data <- rbind(University_Data2, End_Uni)
+```
+
+This code chunk shows how I added a column to show the URL and Guardian league standing of each university.
+```{r, echo=TRUE}
+##Adding the URL column
+URL<- c("http://www.ox.ac.uk/", "https://www.dur.ac.uk/", "http://www.qub.ac.uk/", "https://www.leeds.ac.uk/", "http://www.uwe.ac.uk/", "http://www.kcl.ac.uk/", "http://www.ed.ac.uk/", "http://www.ucl.ac.uk/", "http://www.sheffield.ac.uk/", "http://www.gla.ac.uk/", "https://www.kent.ac.uk/",  "https://www.cam.ac.uk/", "http://www2.gre.ac.uk/", "http://www.birmingham.ac.uk/", "http://polytech.univ-tours.fr/" )
+university_data <- cbind(university_data, URL)
+
+##Adding the league standings column
+league_standings <- c(2, 6, 48, 16, "N/A", 42, 22, 14, 41, 26, 23, 1, 98, 13, "N/A")
+university_data <- cbind(university_data, league_standings)
+
+```
+
+This code chunk shows the function I made for my popups to be used later.
+```{r, echo=TRUE}
+popup_func <- function(a,b,c) {
+paste0(
+"<b><a href=",b,">",a,"</a></b>",
+"<p>Guardian League Standing #",c,"</p>"
+)}
+```
+
+This code chunk shows how I used the library leaflet to create an interactive graphs including popups using my function from earlier.
+```{r, echo=TRUE}
+library(leaflet)
+pal <- colorQuantile("YlOrRd", NULL, n=8)
+leaflet(university_data) %>% addTiles() %>% addCircleMarkers(popup = ~popup_func(University,URL,league_standings))
+```
+
+##plotly
+
+```{r}
+library(plotly)
+
+m <- list(
+  colorbar = list(title = "1"),
+  size = 8, opacity = 0.8, symbol = 'square'
+)
+
+
+g <- list(
+  scope = 'UK',
+  projection=list(type='UK'),
+  showland = TRUE
+ 
+)
+plot_ly(university_data,
+        type = 'scattergeo', 
+        lat=Latitude, 
+        lon=Longitude, 
+        mode="markers") %>%
+  layout(title = 'Uk universities<br>(hover for university)')
+
+
+
+plot_ly(university_data, lat=latitude, lon=longitude, text=hover, color=cnt, , locationmode= 'UK', mode=markers, marker=m)%/%
+  layout(title = 'Uk universities<br>(hover for university)', geo=g)
+
+```
+

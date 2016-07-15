@@ -1,0 +1,9 @@
+"Unique.ID","Name.of.Policy","Type","Policy.Amendment","Year","Valid.From","Valid.To"
+1,"Maternity allowance","Leave Policy","NA",1994,1994-05-01,2000-01-31
+2,"Maternity allowance","Leave Policy","On earning conditions and rates",2000,2000-01-01,2004-04-30
+3,"Maternity allowance","Leave Policy","On the rate and length of entitlement",3003,2003-04-01,2006-10-31
+4,"Maternity allowance","Leave Policy","On the length of entitlement, period of entitlement and others.",2006,2006-10-01,2014-04-30
+5,"Pilots","Cash & Tax Allow Policy","In-Work Credit",2004,2004-04-01,2015-10-31
+6,"Pilots","Cash & Tax Allow Policy","Work Search Premium",2004,2004-10-01,2007-12-31
+7,"Fake Data","Childcare Policy","Made up 1",1991,1994-05-01,2000-01-31
+8,"Fake Data","Childcare Policy","Made up 2",2004,2006-10-01,2007-12-31

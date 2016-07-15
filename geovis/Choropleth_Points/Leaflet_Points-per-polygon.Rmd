@@ -1,0 +1,141 @@
+---
+title: "Shapefile Tally fo Choropleth"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Overview
+
+This document describes how to create a `leaflet` choropleth of the USA; a map of the USA split into regions (in this precise example, the 48 states of the contiguous USA) with each region shaded according to the count of data points contained within that region.
+
+There are therefore two data sets required for this:
+
+- Shape files: defining the choropleth regions
+- Point data: sets of latitude and longtidues
+
+The following libraries are required for this exercise:
+
+```{r libraries}
+library(maps)
+library(mapproj)
+library(leaflet)
+library(rgdal)
+library(GISTools)
+library(sp)
+library(plyr)
+```
+
+## Load and Visualise Shape Files
+
+Import the shapefiles using `readOGR` - obtained from [https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html](https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html)
+
+```{r}
+## Load county borders
+full_us_shapefiles <- readOGR(dsn = "data/shapefiles/", layer = "cb_2015_us_state_500k", verbose = F)
+## Convert FIPS code to numeric
+full_us_shapefiles$STATEFP <- as.character(full_us_shapefiles$STATEFP)
+full_us_shapefiles$STATEFP <- as.numeric(full_us_shapefiles$STATEFP)
+```
+
+Regions in the USA are assigned FIPS codes, these may be used to identify those regions that belong to the contiguous USA using the data file "US-FIPS-Codes.csv":
+
+```{r}
+fips_codes <- read.csv("data/US-FIPS-Codes.csv", stringsAsFactors = F)
+make_us_contiguous <- function(spatial_polgyon= NA){
+  contiguous_fips_codes <- fips_codes[fips_codes$Contiguous.United.States. == "Y",]$STATE
+  contiguous <- full_us_shapefiles[spatial_polgyon$STATEFP %in% contiguous_fips_codes,]
+  # Drop unnecessary levels
+  contiguous@data <- droplevels(contiguous@data)
+  contiguous
+}
+contiguous_us_shapefiles <- make_us_contiguous(full_us_shapefiles)
+```
+
+Extract state names from FIPS file:
+
+```{r}
+contiguous_fips_codes <- fips_codes[fips_codes$Contiguous.United.States. == "Y",]
+contiguous_us_shapefiles$State_Name <- mapvalues(contiguous_us_shapefiles$STATEFP, 
+                                                 from = contiguous_fips_codes$STATE, 
+                                                 to = contiguous_fips_codes$STATE_NAME)
+```
+
+
+Visualise the shapefiles with leaflet:
+
+```{r}
+map <- leaflet(data = contiguous_us_shapefiles) %>% addTiles()
+map %>% addPolygons(
+  stroke = FALSE,
+  smoothFactor = 0.2,
+  fillOpacity = 0.8,
+  # fillColor = ~ pal(var),
+  weight = 1
+)
+```
+
+## Count Points Per Location
+
+Import the locations using `read.csv` and convert into a `SpatialPointsDataFrame` such that their intersection with the shapefiles may be easily calculated:
+
+```{r}
+locations_df <- read.csv("data/lat-long-points.csv", stringsAsFactors = F)
+locations_spdf <- SpatialPointsDataFrame(coords = locations_df,
+                                         data = locations_df,
+                                         proj4string = full_us_shapefiles@proj4string)
+```
+
+Use `poly.counts` to calculate the number of data points per polygon, noting that the polygons in the outputted tally are matched to the `SpatialPolygonsDataframe` object by row number - allowing the polygon tallies to be inserted into the `SpatialPolygonsDataframe`
+
+```{r}
+## Example http://gis.stackexchange.com/a/113009
+## Apply to my data!
+contiguous_counts <- poly.counts(pts = locations_spdf, polys = contiguous_us_shapefiles)
+contiguous_counts_df <- data.frame(contiguous_counts)
+contiguous_us_shapefiles@data$Count.of.locations <- contiguous_counts_df$contiguous_counts
+```
+
+Create a colour palette using `colorBin`
+
+```{r}
+palette <- colorBin(c("#cccccc",brewer.pal(5, "YlGnBu")), 
+                    bins = c(0,1,5,10,20,50,350),
+                    pretty = FALSE,
+                    # na.color = "#cccccc",
+                    alpha = TRUE
+                    )
+```
+
+Generate choropleth:
+
+```{r}
+
+region_labeller <- function(state_name = NA, number_of_points = NA){
+  paste0(
+    "<p>", state_name, "</p>",
+    "<p>", number_of_points, "</p>"
+  )
+}
+
+map <- leaflet(data = contiguous_us_shapefiles) %>% addTiles()
+map <- map %>% addPolygons(
+  stroke = TRUE,
+  color = "#FFFFFF",
+  smoothFactor = 0.2,
+  fillOpacity = 0.8,
+  fillColor = ~ palette(Count.of.locations),
+  weight = 1,
+  popup = ~region_labeller(state_name = State_Name, number_of_points = Count.of.locations)
+)
+
+map %>% addLegend(position = 'topleft', ## choose bottomleft, bottomright, topleft or topright
+          colors = c("#cccccc",brewer.pal(5, "YlGnBu")),
+          labels = c("0","1-5","5-10","10-20","20-50","50-350"),  ## legend labels (only min and max)
+          opacity = 0.6,      ##transparency again
+          title = "relative<br>amount")   ## title of the legend
+```

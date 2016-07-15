@@ -1,0 +1,58 @@
+STATE,STUSAB,STATE_NAME,STATENS,Contiguous United States?
+1,AL,Alabama,1779775,Y
+2,AK,Alaska,1785533,N
+4,AZ,Arizona,1779777,Y
+5,AR,Arkansas,68085,Y
+6,CA,California,1779778,Y
+8,CO,Colorado,1779779,Y
+9,CT,Connecticut,1779780,Y
+10,DE,Delaware,1779781,Y
+11,DC,District of Columbia,1702382,Y
+12,FL,Florida,294478,Y
+13,GA,Georgia,1705317,Y
+15,HI,Hawaii,1779782,N
+16,ID,Idaho,1779783,Y
+17,IL,Illinois,1779784,Y
+18,IN,Indiana,448508,Y
+19,IA,Iowa,1779785,Y
+20,KS,Kansas,481813,Y
+21,KY,Kentucky,1779786,Y
+22,LA,Louisiana,1629543,Y
+23,ME,Maine,1779787,Y
+24,MD,Maryland,1714934,Y
+25,MA,Massachusetts,606926,Y
+26,MI,Michigan,1779789,Y
+27,MN,Minnesota,662849,Y
+28,MS,Mississippi,1779790,Y
+29,MO,Missouri,1779791,Y
+30,MT,Montana,767982,Y
+31,NE,Nebraska,1779792,Y
+32,NV,Nevada,1779793,Y
+33,NH,New Hampshire,1779794,Y
+34,NJ,New Jersey,1779795,Y
+35,NM,New Mexico,897535,Y
+36,NY,New York,1779796,Y
+37,NC,North Carolina,1027616,Y
+38,ND,North Dakota,1779797,Y
+39,OH,Ohio,1085497,Y
+40,OK,Oklahoma,1102857,Y
+41,OR,Oregon,1155107,Y
+42,PA,Pennsylvania,1779798,Y
+44,RI,Rhode Island,1219835,Y
+45,SC,South Carolina,1779799,Y
+46,SD,South Dakota,1785534,Y
+47,TN,Tennessee,1325873,Y
+48,TX,Texas,1779801,Y
+49,UT,Utah,1455989,Y
+50,VT,Vermont,1779802,Y
+51,VA,Virginia,1779803,Y
+53,WA,Washington,1779804,Y
+54,WV,West Virginia,1779805,Y
+55,WI,Wisconsin,1779806,Y
+56,WY,Wyoming,1779807,Y
+60,AS,American Samoa,1802701,N
+66,GU,Guam,1802705,N
+69,MP,Northern Mariana Islands,1779809,N
+72,PR,Puerto Rico,1779808,N
+74,UM,U.S. Minor Outlying Islands,1878752,N
+78,VI,U.S. Virgin Islands,1802710,N

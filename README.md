@@ -6,4 +6,4 @@ Information about the project may be found here: http://blogs.it.ox.ac.uk/acit-r
 
 ## htmlwidgets Templates
 
-This repository contains a selection of template scripts for creating interactive charts using htmlwidgets-dependent R libraries produced for the Live Data project. The repository and templates themselves are best explored through the associated github pages - http://ox-it.github.io/Live-Data_htmlwidgets
+This repository contains a selection of template scripts for creating interactive charts using htmlwidgets-dependent R libraries produced for the Live Data project. The repository and templates themselves are best explored through the associated github pages - http://ox-it.github.io/LiveData_htmlwidgets

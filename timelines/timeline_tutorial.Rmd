@@ -1,0 +1,303 @@
+---
+title: "htmlwidgets Timelines"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+This tutorial demonstrates how to create interactive timelines (or Gantt charts) like the one below using a variety of different libraries, currently including; ggplot2, plotly and googleVis.
+
+```{r, echo=FALSE, fig.height=1, message=FALSE, warning=FALSE}
+library(googleVis)
+library(shiny)
+shinyApp(
+  ui = fluidPage(
+    htmlOutput("gvis_timeline")
+  ),
+  server = function(input, output){
+    datTL <- data.frame(Position=c(rep("President", 3), rep("Vice", 3),"President"),
+                    Name=c("Washington", "Adams", "Jefferson",
+                           "Adams", "Jefferson", "Burr","Washington"),
+                    start=as.Date(x=c(rep(c("1789-03-29", "1797-02-03", 
+                                          "1801-02-03"),2),"1801-02-03")),
+                    end=as.Date(x=c(rep(c("1797-02-03", "1801-02-03", 
+                                        "1809-02-03"),2),"1809-02-03")))
+    
+    output$gvis_timeline <- renderGvis({
+      gvisTimeline(data=datTL, rowlabel="Name",
+                         barlabel="Position",
+                         start="start", 
+                         end="end",
+                         options=list(timeline="{groupByRowLabel:true}",
+                                      backgroundColor='#ffd'))
+    })
+  }, options = list(height = "200px")
+)
+```
+
+The datasets that this tutorial considers are structured as follows:
+
+```{r example_df, echo=FALSE}
+example_df <- data.frame(
+  "Start Date" = c("1789-03-29", "1797-02-03", "1801-02-03"),
+  "End Date" = c("1797-02-03", "1801-02-03", "1809-02-03"),
+  "Timeline Label" = c("Thing A","Thing B","Thing A"),
+  "Timeline Tooltip Info" = c("Label 1", "Label 2", "Label 2"),
+  "Event Category" = c("X","X","Y")
+)
+DT::datatable(example_df)
+```
+
+Where the "Start Date" and "End Date" column contain the start and end dates for the events, which must be formatted as YYYY-MM-DD. If your dates are not formatted like this, then refer to the "Date Manipulations Script" provided separartely. The "Timeline Label" and "Timeline Tooltip Info" columns provide information about how the events should be labelled in the timeline and what should be shown in the tooltip, respectively. Finally, the "Event Category" column is used for colour coding events.
+
+Note that this template covers both how to build gantt charts inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app.
+
+## Import Data
+
+The data for this template is a .csv file accessed from Figshare [here](https://figshare.com/articles/Collated_Datasets_for_Oxford_University_Live_Data_Project/3444278) using `read.csv`. The .csv file contains a list of the UK Prime Ministers from January 1908 to June 2016.
+
+```{r, echo=TRUE}
+timeline_data <- read.csv(file="https://ndownloader.figshare.com/files/5409008")
+timeline_data$Start.Date <- as.Date(timeline_data$Start.Date)
+timeline_data$End.Date <- as.Date(timeline_data$End.Date)
+knitr::kable(timeline_data[1:4,])
+```
+
+An advanced version of this template might attempt to automatically infer the label, tooltip and event categorisation columns but in this case we explicitly state the label and categorisation column.
+
+```{r define_columns, echo=TRUE}
+label_column <- "Prime.Minister"
+category_column <- "Political.Party"
+```
+
+The tooltip information will be generated from the label and category columns in this example.
+
+### Data Processing
+
+An individual may sit as Prime Mininster of the United Kingdom an unlimited nmber of times, in this dataset there are several indivduals who occupy this office multiple times. This raises an issue in sorting the data such that rows of the Gantt chart are appropriately ordered.
+
+The `ave` function allows the aggregation of data according to a function, we wish to order according to `min` - the earliest date an individual became a Prime Minister. Create a `data.frame` where the prime ministers are ordered according to their earliest starting date, note that the data.frame only contains the earliest sitting of the prime ministers.
+
+```{r}
+earliest_date_by_Prime_Minister <-
+  timeline_data[timeline_data$Start.Date == ave(timeline_data$Start.Date, timeline_data$Prime.Minister, FUN =
+                                                  min), ]
+```
+
+Re-order the rows of the data.frame by `$Start.Date` and then by `$Prime.Minister`
+
+```{r}
+earliest_date_by_Prime_Minister <-
+  earliest_date_by_Prime_Minister[order(
+   earliest_date_by_Prime_Minister$Start.Date,
+    earliest_date_by_Prime_Minister$Prime.Minister), ]
+```
+
+Modify the levels of the factor `$Prime.Minister` in the `timeline_data` object according to the order of Prime Minister's names in the `earliest_date_by_Prime_Minister` object:
+
+```{r, echo=TRUE}
+timeline_data$Prime.Minister <-
+  factor(timeline_data$Prime.Minister, levels = rev(as.character(unique(earliest_date_by_Prime_Minister$Prime.Minister))))
+```
+
+Finally, at the time the data was compiled the end of the currently sitting Prime Minister's reign was unknown - it is recorded as `NA`. This needs to be removed from the data as the visualisation libraries do not easily support infinitely long bars. 
+
+```{r, echo=TRUE}
+timeline_data <- timeline_data[!is.na(timeline_data$End.Date) & !is.na(timeline_data$Start.Date),]
+```
+
+For beautification purposes, the colours of the political parties will be used in the visualisation:
+
+```{r}
+party_colours <- list("Labour" = "#DC241f", "Conservatives" = "#0087DC", "Liberal Democrat" = "#FDBB30")
+## Order by the levels in timeline_data
+party_colours <- as.character(party_colours[levels(timeline_data$Political.Party)])
+```
+
+
+## ggplot timeline
+
+The `ggplot` library provides an extensive graphics language that allows the creation of a huge variety of different visualisations, from comparative charts to time series plots - including timelines. Note, however, that `ggplot` output is not dynamic - tooltips are not directly available from the library,
+
+In the code below a `ggplot` object is instantiated, with the following coordinate system (note that `eval(as.name(label_column))` is used to convert strings into names):
+
+- X Axis: Dates, with the `Start.Date` and `End.Date` columns defining the start and end of event series.
+- Y Axis: The `label_column` - the `Prime.Minister` name.
+- Color: The `category_column` - the `Political.Party` the Prime Minister is associated with.
+
+```{r}
+library(ggplot2)
+ggplot_timeline <- ggplot(
+  data = timeline_data,
+  aes(
+    x = Start.Date,
+    xend = End.Date,
+    y = eval(as.name(label_column)),
+    yend = eval(as.name(label_column)),
+    colour = eval(as.name(category_column))
+  )
+)
+ggplot_timeline
+```
+
+An empty plot is displayed because only the coordinate system has been defined - to add horizontal bars to the plot we must add a layer to the plot containing `geom_segment`, two additonal layers with the axes coordinates are added using `xlab` and `ylab`:
+
+```{r}
+ggplot_timeline + geom_segment(size=3) + xlab("Date") + ylab("Prime Minister")
+```
+
+The party colour scheme can now be applied:
+
+```{r}
+ggplot_timeline + geom_segment(size=3) + xlab("Date") + ylab("Prime Minister") + scale_colour_manual(name = "Political Parties",values = party_colours)
+```
+
+
+
+## plotly
+
+The `plotly` library can directly convert many `ggplot` objects into interactive charts using `ggplotly`: 
+
+```{r}
+library(plotly)
+ggplotly(ggplot_timeline + geom_segment(size=3) + xlab("Date") + ylab("Prime Minister") + scale_colour_manual(name = "Political Parties",values = party_colours))
+```
+
+The tooltip content can be restricted to contain just the y or x coordinate as follows:
+
+```{r}
+ggplotly(ggplot_timeline + geom_segment(size=3) + xlab("Date") + ylab("Prime Minister") + scale_colour_manual(name = "Political Parties",values = party_colours), tooltip = "x")
+```
+
+The documentation for the `ggplotly` function gives a fairly opaque description of how to populate the tooltip with custom text, "a character vector specifying... the unofficial "text" aesthetic". This character vector must be supplied as an aesthetic to the `ggplot` object, i.e. in the `aes` function:
+
+```{r}
+ggplotly(
+  ggplot(
+  data = timeline_data,
+  aes(
+    x = Start.Date,
+    xend = End.Date,
+    y = eval(as.name(label_column)),
+    yend = eval(as.name(label_column)),
+    colour = eval(as.name(category_column)),
+    text = letters[1:nrow(timeline_data)]
+  )
+) + geom_segment(size = 3) + xlab("Date") + ylab("Prime Minister") +
+  scale_colour_manual(name = "Political Parties",values = party_colours),
+  tooltip = "text"
+)
+```
+
+Below we define a gantt_labeller function that will format our tooltip content:
+
+```{r}
+gantt_labeler <- function(start_date = NA, end_date = NA, y_axis = NA, color = NA){
+  paste0(
+    "Prime Minister: ", y_axis, "</br>",
+    "Date Range: ", start_date," to ",end_date,
+    "</br>",
+    "Political Party: ",color
+  )
+}
+```
+
+Our interactive `ggplot` now contains an informative and nicely formatted tooltip:
+
+```{r}
+ggplotly(
+  ggplot(
+  data = timeline_data,
+  aes(
+    x = Start.Date,
+    xend = End.Date,
+    y = eval(as.name(label_column)),
+    yend = eval(as.name(label_column)),
+    colour = eval(as.name(category_column)),
+    text = gantt_labeler(start_date = Start.Date, end_date = End.Date, y_axis = eval(as.name(label_column)), color = eval(as.name(category_column)))
+  )
+) + geom_segment(size = 3) + xlab("Date") + ylab("Prime Minister") + scale_colour_manual(name = "Political Parties",values = party_colours),
+  tooltip = "text"
+)
+```
+
+
+## gvisTimeline
+
+Providing our own data:
+
+```{r}
+library(googleVis)
+plot(gvisTimeline(
+  data = timeline_data,
+  rowlabel = label_column,
+  barlabel = category_column,
+  start = "Start.Date",
+  end = "End.Date",
+  options = list(timeline = "{groupByRowLabel:true}",
+                 backgroundColor = '#ffd',
+                 height = 500,
+                 colors="['#cbb69d', '#603913', '#c69c6e']")
+))
+```
+
+```{r}
+gvisColours <- paste0("[","'",party_colours[1],"'")
+for (i in 2:length(party_colours)) {
+  gvisColours <- paste0(gvisColours,", ","'",party_colours[i],"'")
+}
+gvisColours <- paste0(gvisColours,"]")
+gvisColours
+```
+
+```{r}
+plot(gvisTimeline(
+  data = timeline_data[rev(rownames(timeline_data)),],
+  rowlabel = label_column,
+  barlabel = category_column,
+  start = "Start.Date",
+  end = "End.Date",
+  options = list(timeline = "{groupByRowLabel:true}",
+                 backgroundColor = '#ffd',
+                 height = 500,
+                 colors = gvisColours)))
+```
+
+
+
+
+
+## gvisTimeline Shiny App [for removal]
+
+```{r, echo=TRUE}
+library(googleVis)
+library(shiny)
+shinyApp(
+  ui = fluidPage(
+    htmlOutput("gvis_timeline")
+  ),
+  server = function(input, output){
+    datTL <- data.frame(Position=c(rep("President", 3), rep("Vice", 3),"President"),
+                    Name=c("Washington", "Adams", "Jefferson",
+                           "Adams", "Jefferson", "Burr","Washington"),
+                    start=as.Date(x=c(rep(c("1789-03-29", "1797-02-03", 
+                                          "1801-02-03"),2),"1801-02-03")),
+                    end=as.Date(x=c(rep(c("1797-02-03", "1801-02-03", 
+                                        "1809-02-03"),2),"1809-02-03")))
+    
+    output$gvis_timeline <- renderGvis({
+      gvisTimeline(data=datTL, rowlabel="Name",
+                         barlabel="Position",
+                         start="start", 
+                         end="end",
+                         options=list(timeline="{groupByRowLabel:true}",
+                                      backgroundColor='#ffd'))
+    })
+  }, options = list(height = "200px")
+)
+```

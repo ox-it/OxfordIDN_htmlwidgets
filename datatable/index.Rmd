@@ -1,0 +1,90 @@
+---
+title: "Interactive Tables"
+author: "Martin John Hadley"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    code_folding: show
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+# Interactive Tables Tutorial
+
+This tutorial demonstrates how to create interactive tables like the one below using the `DT` library, which is documented at <a href="https://rstudio.github.io/DT/">https://rstudio.github.io/DT/</a>:
+
+```{r, echo = FALSE}
+library(DT)
+desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960")
+datatable(desktopItems,
+          filter = 'top', rownames = FALSE,
+          options = list(pageLength = 5, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")
+```
+
+The `DT` library binds to the extremely popular JavaScript library, <a href="datatables.net">datatables.net</a>. It is pretty much the defacto standard for interactive (responsive) tables, they have the added advantage of being able to paginate data in a variety of ways (including on a server-side engine). Any data.frame can be provided to datatables, and little effort must be put into pre-processing data ready for display in the table.
+
+## Import and Display Data
+
+The data for this template is a .csv file accessed from Figshare [here](https://figshare.com/articles/Investigation_into_the_number_of_desktop_items_on_University_staff_computers_broken_down_by_department_and_operating_system_/3425729) using `read.csv`. 
+
+```{r import_data}
+desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960", stringsAsFactors = F)
+knitr::kable(head(desktopItems))
+```
+
+The first columns contain dates which need to be converted into a date format that `datatable` can handle, for which we use the `lubridate` library. Unfortunately, the dates are slightly complicated - they are formatted `mm/dd/yyyy hh:mm:ss` but not all entries have seconds. The argument `truncated=2` allows us to handle these dates easily:
+
+```{r}
+library(lubridate)
+desktopItems$Timestamp <- mdy_hms(desktopItems$Timestamp, truncated = 2)
+knitr::kable(head(desktopItems))
+```
+
+This data.frame can now be provided to `datatable` from the `DT` library for display, but note the poor formatting of the timestamp
+
+```{r}
+library(DT)
+datatable(desktopItems)
+```
+
+## Column Formatting
+
+There are a number of utility functions for formatting columns:
+
+- formatCurrency
+- formatPercentage
+- formatRound
+- formatDate
+
+In the case of date, there are a number of different formats available, which are hidden in the symbol `DateMethods`, we will use `toUTCString` to format the data nicely.
+
+```{r}
+DT:::DateMethods
+```
+
+The `format*()` functions must be provided with both a datatable to operate on and a which columns to format, it is therefore convenient to use the `%>%` operator:
+
+```{r}
+datatable(desktopItems) %>% formatDate(~Timestamp, method = "toUTCString")
+```
+
+
+## Column Filters
+
+The default datatable output includes a box in the top-right corner labelled "search" that allows the entire table to be filtered, but it's often convenient to enable per column filtering. This is particularly useful for dates, the "Timestamp" column can now be filtered according to a date range. In addition to the column filters, the argument `pageLength` has been added to `options` to reduce the scrolling required to navigate through this tutorial.
+
+```{r}
+datatable(desktopItems,
+          filter = 'top',
+          options = list(pageLength = 5)) %>% formatDate( ~ Timestamp, method = "toUTCString")
+```
+
+Please note that at present there is not a simple, non-JavaScript method known for formatting the date range filter.

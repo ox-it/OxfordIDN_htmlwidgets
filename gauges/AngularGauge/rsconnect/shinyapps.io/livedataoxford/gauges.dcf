@@ -1,0 +1,10 @@
+name: gauges
+account: livedataoxford
+server: shinyapps.io
+appId: 104678
+bundleId: 464209
+url: https://livedataoxford.shinyapps.io/gauges/
+when: 1464342916.26651
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: htmlwidgets_gauges.Rmd

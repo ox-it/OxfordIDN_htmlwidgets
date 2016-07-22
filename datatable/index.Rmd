@@ -23,7 +23,9 @@ This tutorial demonstrates how to create interactive tables like the one below u
 
 ```{r, echo = FALSE}
 library(DT)
+library(lubridate)
 desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960")
+desktopItems$Timestamp <- mdy_hms(desktopItems$Timestamp, truncated = 2)
 datatable(desktopItems,
           filter = 'top', rownames = FALSE,
           options = list(pageLength = 5, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")

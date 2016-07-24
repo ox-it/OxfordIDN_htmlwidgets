@@ -90,3 +90,47 @@ datatable(desktopItems,
 ```
 
 Please note that at present there is not a simple, non-JavaScript method known for formatting the date range filter.
+
+## Responsive Reflow
+
+```{r}
+datatable(desktopItems,
+          filter = 'top',
+          options = list(pageLength = 5, responsive = TRUE, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")
+```
+
+
+## Server Side Processing
+
+Often datatables are used to present a small amount of data from a large (probably multiple tabled) database, in such cases it's important not to download the entire dataset into the client's browser and instead to rely on the server to paginate the data. The following example is from <a href="http://rstudio.github.io/DT/server.html">http://rstudio.github.io/DT/server.html</a>.
+
+There is a JSONP dataset provided by datatables.net that is setup to paginate server side here: https://datatables.net/examples/server_side/scripts/jsonp.php. In order to populate a datatable with the data we must build a `data.frame` with the right structure to contain the data:
+
+```{r}
+container_df <- data.frame(
+  "First name" = character(),
+  "Last name" = character(),
+  "Position" = character(),
+  "Office" = character(),
+  "Start date" = character(),
+  "Salary" = numeric(),
+  check.names = FALSE
+  )
+```
+
+Datatable is instructed to use ajax to pull the data server side from the JSONP data source as follows:
+
+```{r}
+datatable(container_df, rownames = FALSE, options = list(
+  pageLength = 5,
+      ajax = list(
+        serverSide = TRUE, processing = TRUE,
+        url = 'https://datatables.net/examples/server_side/scripts/jsonp.php',
+        dataType = 'jsonp'
+      )
+    ))
+```
+
+
+
+

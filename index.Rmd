@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 library(htmltools)
 ```
 
-The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is available in the XXXXXXBARCHARTXXX section.
+The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is documented at http://ox-it.github.io/LiveData_htmlwidgets/charts/BarCharts.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(highcharter)
@@ -45,7 +45,9 @@ In order to generate these charts, R must generate the requisite HTML and JavaSc
 htmlwidgets provides standardised tools to build secondary R packages that bind to JavaScript libraries, the functions in these R packages can be used to generate the same output the original JavaScript library would
 ```
 
-A popular visualisation library used in this tutorial is <a href=http://www.plot.ly>plot.ly</a>, the developers for plot.ly have created a library using `htmlwidgets` called `plotly` that allows interactive charts, maps and more to be generated directly from R code. Note that if you are following along with the code samples in this document you are advised to use RStudio which provides a built-in web viewer within which visualisations can be seen. The code below generates an interactive scatterplot using the `plotly.js` library:
+A popular visualisation library used in this tutorial is <a href=http://www.plot.ly>plot.ly</a>, the developers for plot.ly have created a library using `htmlwidgets` called `plotly` that allows interactive charts, maps and more to be generated directly from R code. Note that if you are following along with the code samples in this document you are advised to use RStudio which provides a built-in web viewer within which visualisations can be seen. 
+
+The code below generates an interactive scatterplot using the `plotly.js` library:
 
 ```{r}
 library(plotly)
@@ -58,23 +60,53 @@ plot_ly(data = gapminder,
         mode = "markers")
 ```
 
-# What's in this guide? 
+# What's in these guides? 
 
 There are over 15 CRAN-hosted libraries that utilise htmlwidgets for creating interactive content, the majority of these libraries are well documented at <a href="http://www.htmlwidgets.org">htmlwidgets.org</a>. The documentation at htmlwidgets.org is focused on individual libraries, it does not attempt to group them or compare the utility of the different libraries for specific types of charts.
 
-This document is designed to address the following questions:
+This collection of guides attempts to address the following questions:
 
 - Which library is capable of making chart X?
 - Which charts can be made with library X?
-- How do these charts compare against one another?
+- What type of data can be displayed with each chart/library?
+- How does the process for creating chart X compare across the available libraries?
 
-An interactive breakdown of the libraries is provided in the section below, however note that it is not the intention of this document to cover *all* available htmlwidget libraries - only those that have been used in the Live Data project
+Note that these guides were produced for the [Live Data Project](blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project/) run by Oxford University and do not aim to cover *all* htmlwidgets, in the first place only those libraries used in case studies are covered. However, futurue contributions are welcome.
 
-```{r child = 'htmlwidget-comparisons/index.Rmd'}
+### htmlwidget Comparisons
+
+A thorough comparison of the chart types and htmlwidget libraries available is provided [here](http://ox-it.github.io/LiveData_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
+
+### Chart Templates
+
+The following chart templates are currently provided:
+
+- [BarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/BarCharts), [StackedBarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/StackedBarCharts), [LineCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/LineCharts)
+- [Interactive Tables (Datatables)](http://ox-it.github.io/LiveData_htmlwidgets/datatable)
+- Gauges
+- Scattergeo, Choropleth
+- Networks
+- Timelines and Gantt Charts
+
+Chart templates are organised in this repository as follows:
+
+```
+chartType
+---------| index.html
+---------| shiny_Folder
+-----------------------| ui.R
+-----------------------| server.R
 ```
 
+The index.html file contains a very basic description of the chartType discussed in the templates, and instructions on how to construct the chartType with a variety of different libraries (where possible). This file can be viewed at the following address:
 
-<!-- # ```{r child = 'charts/index.Rmd'} -->
-<!-- # ``` -->
+http://ox-it.github.io/LiveData_htmlwidgets/chartType
+
+Where multiple libraries are capable of making comparable visualisations, a shiny app is provided to compare these at the following address:
+
+https://livedataoxford.shinyapps.io/htmlwidget_template_chartType/
+
+
+
 
 

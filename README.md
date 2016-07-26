@@ -1,6 +1,8 @@
 # About this repository
 
-This repository was initially created to provide how-to-guides on using htmlwidgets for interactive data visualisations by the [Live Data Project](http://blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project) team. Note that an interactive version of this document is avialable here: http://ox-it.github.io/LiveData_htmlwidgets/  
+This repository was initially created to provide how-to-guides on using htmlwidgets for interactive data visualisations by the [Live Data Project](http://blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project) team. Contributions and comments gratefully received.
+
+Note that an interactive version of this document is avialable here: http://ox-it.github.io/LiveData_htmlwidgets/  
 
 # Interactive Chart with htmlwidgets
 

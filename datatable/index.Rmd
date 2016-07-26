@@ -19,7 +19,10 @@ library(htmltools)
 
 # Interactive Tables Tutorial
 
-This tutorial demonstrates how to create interactive tables like the one below using the `DT` library, which is documented at <a href="https://rstudio.github.io/DT/">https://rstudio.github.io/DT/</a>:
+This tutorial demonstrates how to create interactive tables like the one below using the [DT](https://rstudio.github.io/DT/) and [rhandsontable](http://jrowen.github.io/rhandsontable/#introduction) libraries, like the one below (built using `DT`). Note that there are three interactive shiny apps associated with this tutorial:
+
+- Comparison of `DT` and `rhandsontable`
+- Server-side 
 
 ```{r, echo = FALSE}
 library(DT)
@@ -31,7 +34,7 @@ datatable(desktopItems,
           options = list(pageLength = 5, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")
 ```
 
-The `DT` library binds to the extremely popular JavaScript library, <a href="datatables.net">datatables.net</a>. It is pretty much the defacto standard for interactive (responsive) tables, they have the added advantage of being able to paginate data in a variety of ways (including on a server-side engine). Any data.frame can be provided to datatables, and little effort must be put into pre-processing data ready for display in the table.
+These libraries are useful for visualising almost all rectangular datasets, with support for a variety of data types (dates, strings, URLS, etc).
 
 ## Import and Display Data
 
@@ -42,13 +45,17 @@ desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960"
 knitr::kable(head(desktopItems))
 ```
 
-The first columns contain dates which need to be converted into a date format that `datatable` can handle, for which we use the `lubridate` library. Unfortunately, the dates are slightly complicated - they are formatted `mm/dd/yyyy hh:mm:ss` but not all entries have seconds. The argument `truncated=2` allows us to handle these dates easily:
+The first columns contain dates which need to be converted into a date format, for which we use the `lubridate` library. Unfortunately, the dates are slightly complicated - they are formatted `mm/dd/yyyy hh:mm:ss` but not all entries have seconds. The argument `truncated=2` allows us to handle these dates easily:
 
 ```{r}
 library(lubridate)
 desktopItems$Timestamp <- mdy_hms(desktopItems$Timestamp, truncated = 2)
 knitr::kable(head(desktopItems))
 ```
+
+# DT
+
+The `DT` library binds to the extremely popular JavaScript library, <a href="datatables.net">datatables.net</a>. It is pretty much the defacto standard for interactive (responsive) tables, they have the added advantage of being able to paginate data in a variety of ways (including on a server-side engine). Any data.frame can be provided to datatables, and little effort must be put into pre-processing data ready for display in the table.
 
 This data.frame can now be provided to `datatable` from the `DT` library for display, but note the poor formatting of the timestamp
 
@@ -91,14 +98,13 @@ datatable(desktopItems,
 
 Please note that at present there is not a simple, non-JavaScript method known for formatting the date range filter.
 
-## Responsive Reflow
+### Responsive Reflow
 
 ```{r}
 datatable(desktopItems,
           filter = 'top',
           options = list(pageLength = 5, responsive = TRUE, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")
 ```
-
 
 ## Server Side Processing
 
@@ -129,6 +135,31 @@ datatable(container_df, rownames = FALSE, options = list(
         dataType = 'jsonp'
       )
     ))
+```
+
+# rhandsontables
+
+The `rhandsontables` library binds to the [handsontable](https://handsontable.com/) which is designed for displaying interactive spreadsheets - with a focus on editing. Note that the handsontable.JS license is licensed such that educational use is free, but commercial use is not - refer to https://handsontable.com/ for details.
+
+The data.frame storing our data can be provided to `rhandsontable` for display, note that values in the table can be updated freely.
+
+```{r}
+library(rhandsontable)
+rhandsontable(desktopItems)
+```
+
+Editing can be turned off globally or for individual columns with `hot_col` and the `readOnly` argument, as with most `htmlwidgets` the `%>%` ("pipe") operator is used to modify existing output:
+
+```{r}
+rhandsontable(desktopItems) %>% hot_col("Desktop.Items", readOnly = TRUE)
+```
+
+In this document we are only concerend with displaying data, we therefore do not discuss further customisation of `rhandsontable` beyond highlighting the selected row and column with the `highlight*` argument to `hot_table` and enabling sorting of columns (double-click on headings)
+
+```{r}
+rhandsontable(desktopItems) %>% hot_col("Desktop.Items", readOnly = TRUE) %>% 
+  hot_table(highlightCol = TRUE, highlightRow = TRUE) %>% 
+  hot_cols(columnSorting = TRUE)
 ```
 
 

@@ -1,0 +1,10 @@
+<p>This Shiny app displays an interactive timeline generated using the <a href=https://github.com/ropensci/plotly>plotly</a> library of the UK Prime Ministers from April 1908 to June 2016, the dataset is available on Figshare <a href="https://figshare.com/articles/Collated_Datasets_for_Oxford_University_Live_Data_Project/3444278">here</a>.</p>
+
+<p>The following interactions are possible:</p>
+
+- Hover over items for tooltips
+- Click items for an interactive table to be displayed below the timeline
+- Drag a rectangular area over the chart to zoom in (double-click to zoom out)
+- Further controls are shown in the top right of the visualisation when your cursor enters the chart
+
+<p>The code for this shiny app is available on <a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/timelines">GitHub</a></p>

@@ -1,0 +1,30 @@
+---
+title: "timevis Stub"
+output: html_document
+---
+
+## timevis
+
+The `timevis` library uses the vis.js library to build impressive interactive gantt charts and timelines, with good support for both instantaneous and non-instantaneous event series. Documentation for the library is available [https://github.com/daattali/timevis] and an [interactive guide](http://daattali.com/shiny/timevis-demo/) including advanced shiny functionality has also been published by the developer.
+
+Like many libraries, the workhorse of the library (`timevis`) expects a specially formatted `data.frame`. Note that at the time of writing (July 2016) the library does not support tooltips.
+
+- id: Unique for each row
+- content: Gantt label
+- start: start date for each event
+- end: end date for each event
+- title: hover text
+
+Let us create a version of `timeline_data` with this format and provide this directly to `timevis` for visualisation, note that there is not a seperate line for each data.
+
+```{r}
+timevis_data <- data.frame(
+  "id" = 1:nrow(timeline_data),
+  "content" = timeline_data$Prime.Minister,
+  "start" = timeline_data$Start.Date,
+  "end" = timeline_data$End.Date,
+  "title" = timeline_data$Political.Party
+)
+library(timevis)
+timevis(timevis_data)
+```

@@ -1,0 +1,26 @@
+---
+title: "Htmlwidget Templates"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Templates are organised as follows:
+
+```
+chartType
+---------| index.html
+---------| shiny_Folder
+-----------------------| ui.R
+-----------------------| server.R
+```
+
+The index.html file contains a very basic description of the chartType discussed in the templates, and instructions on how to construct the chartType with a variety of different libraries (if possible). This file can be viewed at the following address:
+
+http://ox-it.github.io/LiveData_htmlwidgets/chartType
+
+Where multiple libraries are capable of making comparable visualisations, a shiny app is provided to compare these at the following address:
+
+https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/

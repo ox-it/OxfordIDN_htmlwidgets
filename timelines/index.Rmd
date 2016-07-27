@@ -131,10 +131,11 @@ timeline_data$Prime.Minister <-
 timeline_data$Political.Party <- as.factor(timeline_data$Political.Party)
 ```
 
-Finally, at the time the data was compiled the end of the currently sitting Prime Minister's reign was unknown - it is recorded as `NA`. This needs to be removed from the data as the visualisation libraries do not easily support infinitely long bars. 
+Finally, at the time the data was compiled the end of the currently sitting Prime Minister's reign was unknown - it is recorded as `NA`. This needs to be removed from the data as the visualisation libraries do not easily support infinitely long bars. Note the use of `droplevels` to remove empty levels from the factors in `timeline_data`.
 
 ```{r, echo=TRUE}
 timeline_data <- timeline_data[!is.na(timeline_data$End.Date) & !is.na(timeline_data$Start.Date),]
+timeline_data <- droplevels(timeline_data)
 ```
 
 For beautification purposes, the colours of the political parties will be used in the visualisation:
@@ -250,6 +251,51 @@ ggplotly(
 ) + geom_segment(size = 3) + xlab("Date") + ylab("Prime Minister") + scale_colour_manual(name = "Political Parties",values = party_colours),
   tooltip = "text"
 )
+```
+
+## timevis
+
+The `timevis` library uses the vis.js library to build impressive interactive timelines and and gantt charts, with good support for both instantaneous and non-instantaneous event series. Documentation for the library is available [https://github.com/daattali/timevis] and an [interactive guide](http://daattali.com/shiny/timevis-demo/) including advanced shiny functionality has also been published by the developer.
+
+Like many libraries, the workhorse of the library (`timevis`) expects a specially formatted `data.frame`. Note that at the time of writing (July 2016) the library does not support tooltips.
+
+- id: Unique for each row
+- content: Gantt label
+- start: start date for each event
+- end: end date for each event
+- title: hover text
+
+Let us create a version of `timeline_data` with this format and provide this directly to `timevis` for visualisation; note that there is not a seperate line for each data with this formulation - this requires groups, as discussed below.
+
+```{r}
+library(timevis)
+timevis_data <- data.frame(
+  id = 1:nrow(timeline_data),
+  content = timeline_data[,label_column],
+  start = timeline_data$Start.Date,
+  end   = timeline_data$End.Date,
+  type = c(rep("range", nrow(timeline_data))),
+  title = as.character(timeline_data[,category_column])
+)
+timevis(timevis_data)
+```
+
+### Groups
+
+The `timevis` library allows a "y-axis" to be added to timelines so that events may be grouped together through the `groups` argument, which requires another specially formatted `data.frame`. As in this dataset there are multiple items within a single grouping (i.e. Prime Ministers were elected for multiple, separate parliaments) the `levels` of the column `timeline_data$Prime.Minister` are used:
+
+```{r}
+timeline_groups <- data.frame(
+  id = levels(timeline_data[,label_column]),
+  content = levels(timeline_data[,label_column])
+)
+```
+
+Adding the column `group` to the `timevis_data` object and providing `groups = timeline_groups` creates an interactive gantt chart, note that at present it is not easy to provide custom colours to the events based on the political party.
+
+```{r}
+timevis_data$group <- timeline_data[,label_column]
+timevis(data = timevis_data, groups = timeline_groups, options = list(editable = FALSE),showZoom = T,fit = TRUE,height = "800px")
 ```
 
 ## Shiny App

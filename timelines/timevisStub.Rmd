@@ -5,7 +5,7 @@ output: html_document
 
 ## timevis
 
-The `timevis` library uses the vis.js library to build impressive interactive gantt charts and timelines, with good support for both instantaneous and non-instantaneous event series. Documentation for the library is available [https://github.com/daattali/timevis] and an [interactive guide](http://daattali.com/shiny/timevis-demo/) including advanced shiny functionality has also been published by the developer.
+The `timevis` library uses the vis.js library to build impressive interactive timelines and and gantt charts, with good support for both instantaneous and non-instantaneous event series. Documentation for the library is available [https://github.com/daattali/timevis] and an [interactive guide](http://daattali.com/shiny/timevis-demo/) including advanced shiny functionality has also been published by the developer.
 
 Like many libraries, the workhorse of the library (`timevis`) expects a specially formatted `data.frame`. Note that at the time of writing (July 2016) the library does not support tooltips.
 
@@ -18,6 +18,22 @@ Like many libraries, the workhorse of the library (`timevis`) expects a speciall
 Let us create a version of `timeline_data` with this format and provide this directly to `timevis` for visualisation, note that there is not a seperate line for each data.
 
 ```{r}
+timeline_data <- read.csv(file="https://ndownloader.figshare.com/files/5533448")
+library(lubridate)
+timeline_data$Start.Date <- dmy(timeline_data$Start.Date)
+timeline_data$End.Date <- dmy(timeline_data$End.Date)
+label_column <- "Prime.Minister"
+category_column <- "Political.Party"
+earliest_date_by_Prime_Minister <-
+  timeline_data[timeline_data$Start.Date == ave(timeline_data$Start.Date, timeline_data$Prime.Minister, FUN =
+                                                  min), ]
+earliest_date_by_Prime_Minister <-
+  earliest_date_by_Prime_Minister[order(
+    earliest_date_by_Prime_Minister$Start.Date,
+    earliest_date_by_Prime_Minister$Prime.Minister), ]
+timeline_data$Prime.Minister <-
+  factor(timeline_data$Prime.Minister, levels = rev(as.character(unique(earliest_date_by_Prime_Minister$Prime.Minister))))
+timeline_data <- timeline_data[!is.na(timeline_data$End.Date) & !is.na(timeline_data$Start.Date),]
 timevis_data <- data.frame(
   "id" = 1:nrow(timeline_data),
   "content" = timeline_data$Prime.Minister,
@@ -26,5 +42,7 @@ timevis_data <- data.frame(
   "title" = timeline_data$Political.Party
 )
 library(timevis)
+library(htmltools)
 timevis(timevis_data)
 ```
+

@@ -11,6 +11,9 @@ library(DT)
 
 source(file = "data-processing.R")
 
+label_column <- "Prime.Minister"
+category_column <- "Political.Party"
+
 ## =========================== Beautification ===================================
 ## ==============================================================================
 

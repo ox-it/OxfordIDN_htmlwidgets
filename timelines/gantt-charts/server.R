@@ -5,6 +5,7 @@ library(plotly)
 library(lubridate)
 library(dplyr)
 library(DT)
+library(timevis)
 
 ## =========================== data processing ==================================
 ## ==============================================================================
@@ -50,6 +51,26 @@ party_colours <-
 
 shinyServer(function(input, output) {
   
+  output$timevis_timeline <- renderTimevis({
+    timevis_data <- data.frame(
+      id = 1:nrow(timeline_data),
+      content = timeline_data[,label_column],
+      start = timeline_data$Start.Date,
+      end   = timeline_data$End.Date,
+      type = c(rep("range", nrow(timeline_data))),
+      group = timeline_data[,label_column],
+      title = as.character(timeline_data[,category_column])
+    )
+    
+    timeline_groups <- data.frame(
+      id = levels(timeline_data[,label_column]),
+      content = levels(timeline_data[,label_column])
+    )
+    
+    timevis(data = timevis_data, groups = timeline_groups, options = list(editable = FALSE),showZoom = T,fit = TRUE)
+    
+  })
+  
   output$plotly_timeline <- renderPlotly({
 
     ggplotly(
@@ -76,20 +97,34 @@ shinyServer(function(input, output) {
   
   output$selected_PM_Table <- renderDataTable({
     event_data <- event_data("plotly_click")
-    
+
     if(is.null(event_data)){
       return()
     }
-    
+
     selected_PM <- rev(as.character(earliest_date_by_Prime_Minister$Prime.Minister))[event_data$y]
-    
+
     print(selected_PM)
-    
+
     print(class(timeline_data$Prime.Minister))
-    
+
     timeline_data %>% filter(Prime.Minister %in% selected_PM)
-    
-    
+  })
+  
+  output$timeline_ui <- renderUI({
+    switch(input$selected_vis_library,
+           "plotly" = {
+             fluidRow(
+               column(
+                 plotlyOutput("plotly_timeline"),
+                 dataTableOutput("selected_PM_Table"),
+                 width = 12
+               )
+             )
+           },
+           "timevis" = {
+             timevisOutput("timevis_timeline", height = "100%")
+           })
   })
   
 })

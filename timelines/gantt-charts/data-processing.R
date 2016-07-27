@@ -18,12 +18,7 @@ timeline_data$Prime.Minister <-
   factor(timeline_data$Prime.Minister, levels = rev(as.character(unique(earliest_date_by_Prime_Minister$Prime.Minister))))
 
 
+
+
 ## =========================== Need list of prime ministers =====================
 ## ==============================================================================
-
-
-
-
-as.character(unique(earliest_date_by_Prime_Minister$Prime.Minister))
-
-

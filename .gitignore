@@ -11,3 +11,7 @@
 *.rds
 *.httr-oauth
 .httr-oauth
+
+
+## Specific Includes
+!lat-long-points.csv

@@ -300,7 +300,7 @@ timevis(data = timevis_data, groups = timeline_groups, options = list(editable =
 
 ## Shiny App
 
-A shiny app containing an interactive version of the plotly chart above is available here: <a href="https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/">https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/</a>.
+A shiny app containing an interactive version of the charts above is available here: <a href="https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/">https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/</a>.
 
 The following types of interaction are supported:
 

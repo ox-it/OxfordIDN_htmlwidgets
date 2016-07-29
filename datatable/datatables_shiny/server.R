@@ -11,6 +11,7 @@ desktopItems$Timestamp <-
   mdy_hms(desktopItems$Timestamp, truncated = 2)
 
 shinyServer(function(input, output, session) {
+  
   output$datatable <- DT::renderDataTable({
     desktopItems
   },

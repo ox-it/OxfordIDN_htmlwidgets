@@ -162,6 +162,14 @@ rhandsontable(desktopItems) %>% hot_col("Desktop.Items", readOnly = TRUE) %>%
   hot_cols(columnSorting = TRUE)
 ```
 
+## Shiny App
+
+A shiny app containing interactive versions of the datatables above is available here: <a href="https://livedataoxford.shinyapps.io/htmlwidget_template_datatables/">https://livedataoxford.shinyapps.io/htmlwidget_template_datatables/</a>.
+
+The following types of interaction are supported:
+
+- Switch between visualisation library
+- Select rows in the interactive table and see the row number displayed in the app
 
 
 

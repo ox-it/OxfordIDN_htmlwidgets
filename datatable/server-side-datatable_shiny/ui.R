@@ -3,7 +3,9 @@ library(DT)
 
 shinyUI(
   fluidPage(
-    h1('A Table Using Server-side Processing'),
-    DT::dataTableOutput('server_queried_DT')
+    h2("Server-Side datatable Shiny App"),
+    wellPanel(includeMarkdown("App_Description.Rmd")),
+    uiOutput("selected_row"),
+    DT::dataTableOutput('datatable')
   )
 )

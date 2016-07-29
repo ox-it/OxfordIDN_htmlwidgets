@@ -1,5 +1,5 @@
 ---
-title: "BarChart Template"
+title: "Interactive BarCharts"
 output: 
   html_document:
     toc: true
@@ -16,9 +16,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Bar Chart Tutorial
+# Interactive BarCharts Tutorial
 
-This tutorial demonstrates how to create interactive barcharts like the one below using a variety of different libraries, currently including; plotly and highchart.
+This tutorial demonstrates how to create interactive barcharts like the one below using a variety of different libraries, currently including; plotly and highchart. Note that there is currently one interactive shiny app associated with this tutorial:
+
+- [Interactive BarCharts with htmlwidgets](https://livedataoxford.shinyapps.io/htmlwidget_template_BarCharts)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(highcharter)
@@ -58,7 +60,7 @@ Where the "measure" column contains numerical data which is categorised by a num
 
 Note that this template covers both how to build such a bar chart inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app.
 
-## Import and Clean Data
+# Import and Clean Data
 
 The data for this template is a .csv file accessed from Figshare [here](https://figshare.com/articles/Investigation_into_the_number_of_desktop_items_on_University_staff_computers_broken_down_by_department_and_operating_system_/3425729) using `read.csv`.
 
@@ -76,7 +78,7 @@ categories <- c("Operating.System","University.Department","University","Country
 
 These columns will be used in the BarCharts to decide what dimensions of the data we are visualising.
 
-## Mean Parameter per Category
+# Mean Parameter per Category
 
 Using the `aggregate` function the mean number of desktop items per category can easily be calculated, the chosen category for aggregation will be assigned to `selected_dimension`. The function `as.name` is necessary to convert strings into valid column names.
 
@@ -100,7 +102,7 @@ format_label <- function(dimension){
 }
 ```
 
-### Highcharter
+## Highcharter
 
 The `data.frame` can now be visualised using `highcharter` as follows, note that it is unnecessary to use `eval` with this library as a namespace is not defined within the context of the visualisation.
 
@@ -127,7 +129,7 @@ highchart() %>%
 ```
 
 
-### Plotly
+## Plotly
 
 The `data.frame` can now be visualised using `Plotly` as follows, note that `eval` is necessary as the `x` and `y` arguments are assumed to be explicit column names for the `data` provided to `plotly` - `eval` forces the evaluation of `as.name(selected_dimension)`.
 
@@ -158,7 +160,7 @@ plot_ly(data = aggregate_mean,
 ```
 
 
-## Number of Observations per Category
+# Number of Observations per Category
 
 The number of observations per category can be calculated with `aggregate` by applying the `FUN` length across the subset data - i.e. how long is the list of observations for each category. 
 
@@ -167,7 +169,7 @@ aggregate_number_of_observations <- aggregate(data = desktopItems, eval(as.name(
 colnames(aggregate_number_of_observations) <- c(selected_dimension,"Desktop.Items")
 ```
 
-### Highcharter
+## Highcharter
 
 Using the same code as above, a barchart of the aggregated data can easily be generated:
 
@@ -182,7 +184,7 @@ highchart() %>%
 ```
 
 
-### Plotly
+## Plotly
 
 Using the same code as above, a barchart of the aggregated data can easily be generated:
 
@@ -199,7 +201,7 @@ plot_ly(data = aggregate_number_of_observations,
          margin = list(l = 80))
 ```
 
-## Functionalising 
+# Functionalising 
 
 It is convenient to proceduralise the creation of these charts by converting the scripts into functions that can easily be called with different parameters, this is particularly useful for in Shiny apps. A function for each charting library considered in this document is provided below.
 
@@ -236,7 +238,7 @@ intermediate_aggregate <- aggregate_data_for_barchart(
 knitr::kable(intermediate_aggregate)
 ```
 
-### Plotly
+## Plotly
 
 The function below is used to generate a plotly bar chart from the aggregate data function, note that a number of additional arguments have been added to provide greater flexibility over the output.
 
@@ -282,7 +284,7 @@ plotly_aggregated_barchart(
 ```
 
 
-### Highcharter
+## Highcharter
 
 The function below is used to generate a highcharter bar chart from the aggregate data function, note that a number of additional arguments have been added to provide greater flexibility over the output.
 
@@ -314,5 +316,14 @@ highcharter_aggregated_barchart(
 )
 ```
 
+# Shiny App
 
+A shiny app containing an interactive version of the charts above is available here: <a href="https://livedataoxford.shinyapps.io/htmlwidget_template_BarCharts/">https://livedataoxford.shinyapps.io/htmlwidget_template_BarCharts/</a>.
 
+The following types of interaction are supported:
+
+- Switch between different visualisation libraries 
+- Switch between different measures to parametrize data against
+- Switch beteen viewing mean response value and number of responses
+- Hover over bars for further information
+- Most visualisation libraries provide further interactive capabilities

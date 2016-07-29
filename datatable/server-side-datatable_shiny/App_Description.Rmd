@@ -7,4 +7,4 @@ This Shiny app demonstrates the ability to use the `datatables` library to visua
 
 - Select rows in the `datatable` and a list of the first names from the selected rows will be shown.
 
-<p>The code for this shiny app is available on <a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/datatable">GitHub</a></p>
+<p>The code for this shiny app is available on <a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/datatable/server-side-datatable_shiny">GitHub</a></p>

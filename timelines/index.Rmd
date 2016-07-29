@@ -16,7 +16,9 @@ library(htmltools)
 
 ## Interactive Timelines
 
-This tutorial demonstrates how to create interactive timelines (or Gantt charts) like the one below using a variety of different libraries, currently including; [ggplot2](http://ggplot2.org) and [plotly](http://plot.ly). An interactive shiny application containing a plotly chart is available here: <a href="https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/">https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/</a>. Note that the [googleVis](https://github.com/mages/googleVis) library is capable of generating timelines but these depend on Flash and are therefore not covered in this tutorial.
+This tutorial demonstrates how to create interactive timelines (or Gantt charts) like the one below using a variety of different libraries, currently including; [ggplot2](http://ggplot2.org) and [plotly](http://plot.ly). Note that the [googleVis](https://github.com/mages/googleVis) library is capable of generating timelines but these depend on Flash and are therefore not covered in this tutorial.
+
+An interactive shiny application containing a plotly chart is available here: <a href="https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/">https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/</a>.
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}

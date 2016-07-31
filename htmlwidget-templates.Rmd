@@ -24,3 +24,5 @@ http://ox-it.github.io/LiveData_htmlwidgets/chartType
 Where multiple libraries are capable of making comparable visualisations, a shiny app is provided to compare these at the following address:
 
 https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/
+
+Note that multiple shiny apps may be associated with one template.

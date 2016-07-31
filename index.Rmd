@@ -106,6 +106,8 @@ Where multiple libraries are capable of making comparable visualisations, a shin
 
 https://livedataoxford.shinyapps.io/htmlwidget_template_chartType/
 
+Note that multiple shiny apps may be associated with one template.
+
 
 
 

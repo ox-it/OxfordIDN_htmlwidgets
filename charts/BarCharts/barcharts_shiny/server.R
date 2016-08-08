@@ -28,6 +28,7 @@ dimension_columns <-
 ## ==============================================================================
 
 format_label <- function(dimension) {
+  # replaces dots with spaces to produce more readable column names
   gsub(pattern = "[.]",
        replacement = " ",
        x = dimension)
@@ -44,6 +45,7 @@ aggregate_data_for_barchart <-
                 FUN = aggregate_function)
     colnames(aggregated_data) <- c(dimension_column, measure_column)
     
+    # bar charts look nicer when sorted by value
     aggregated_data <-
       aggregated_data[order(aggregated_data[, measure_column]), ]
     # Return for use
@@ -85,6 +87,7 @@ highcharter_aggregated_barchart <- function(data = NA,
     hc_xAxis(categories = data[, dimension_column]) %>%
     hc_add_series(
       name = format_label(dimension_column),
+      # bad idea to reverse here since makes the 'spec' for highcharter_aggregated_barchart rather odd
       data = rev(data[, measure_column])
     ) %>%
     hc_yAxis(title = list(text = aggregate_description)) %>%
@@ -111,6 +114,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$measure_plot <- renderUI({
+    # THIS NEEDS A COMMENT EXPLAINING IT
     switch (
       input$chart_library,
       "highcharter" = highchartOutput("highchart_barchart"),
@@ -119,6 +123,7 @@ shinyServer(function(input, output, session) {
   })
   
   intermediate_aggregate <- reactive({
+    # explain reactive here??
     aggregate_data_for_barchart(
       data = desktopItems,
       dimension_column = input$selected_dimension,
@@ -159,8 +164,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$highchart_barchart <- renderHighchart({
-    print("foo")
-    
+    # THIS NEEDS A COMMENT EXPLAINING IT
     if (is.null(input$selected_measure)) {
       return()
     }
@@ -183,6 +187,7 @@ shinyServer(function(input, output, session) {
         switch (
           input$aggregate_function,
           "mean" = "Average number of desktop items",
+          "sum" = "Total number of desktop items", # just a suggestion
           "length" = "Number of respondants"
         )
     )

@@ -116,7 +116,7 @@ highchart() %>%
 ```
 
 
-The `highcharter` library distinguishes between horizontal and vertically orientated bar charts by `hc_chart(type = )`; column and bar are verticle and horizontal, respectively. Both varieties of chart are more legible if bars are ordered from largest to smallest, note that internal to `hc_add_series` the ordered `measure_column` is reversed to achieve this:
+The `highcharter` library distinguishes between horizontal and vertically orientated bar charts by `hc_chart(type = )`; column and bar are verticle and horizontal, respectively. Both varieties of chart are more legible if bars are ordered from largest to smallest. We also add a label for the Y axis. Note that internal to `hc_add_series` the ordered `measure_column` is reversed to achieve this:
 
 ```{r}
 aggregate_mean <- aggregate_mean[order(aggregate_mean$Desktop.Items),]

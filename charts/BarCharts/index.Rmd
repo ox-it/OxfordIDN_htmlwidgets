@@ -203,7 +203,7 @@ plot_ly(data = aggregate_number_of_observations,
 
 # Functionalising 
 
-It is convenient to proceduralise the creation of these charts by converting the scripts into functions that can easily be called with different parameters, this is particularly useful for in Shiny apps. A function for each charting library considered in this document is provided below.
+It is convenient to proceduralise the creation of these charts by converting the scripts into functions that can easily be called with different parameters, this is particularly useful in Shiny apps. A function for each charting library considered in this document is provided below.
 
 Note that the aggregation function is the same, for this tutorial, regardless of the visualisation library used.
 

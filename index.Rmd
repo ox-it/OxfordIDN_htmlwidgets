@@ -89,6 +89,44 @@ A thorough comparison of the chart types and htmlwidget libraries available is p
 ```{r child = 'htmlwidget-templates.Rmd'}
 ```
 
+# htmlwidgets and Future Proofing Visualisation
 
+As htmlwidgets are dependent on visualisation JavaScript libraries that are themselves dependent on (often) multiple other libraries and/or frameworks the long term viabiity of a htmlwidget visualisation must be considered. These tutorials mostly consider the utilisation of htmlwidgets within RMarkdown documents but there are also multiple examples of the visualisations being used in Shiny apps, different advice is relevant to the two different technologies.
 
+## RMarkdown and HTML
+
+When an RMarkdown file is knitted together to output a HTML document, all requisite JavaScript for any embedded htmlwidgets is compressed into Base64 strings and saved into the resultant .html file. If the .html source was inspected you would find the following:
+
+```{html}
+<script src="data:application/x-javascript;base64,compressedJavaScript="></script
+```
+
+This is relatively future-proof, in that no external CDN is needed to load the JavaScript for your visualisations - instead the JS is in your .html file. However, as browsers and web-enabled form factors improve there may be new features or breaking changes that means the JS embedded into your pages does not behave as well as it *should* do as it has stagnated.
+
+XXX: How to get the RMarkdown document to generate itself such that the compressed javascript is optionally called?
+
+## Shiny Apps
+
+Shiny servers (including the shinyapps.io service) provide a storage solution for static assets like CSS and JavaScript, so when your Shiny app is deployed a copy of the requisite CSS and JS is uploaded to the server and called locally from the following path: 
+
+```{html}
+shinyaccount.shinyapps.io/shinyapp/staticassets/shared/vis-4.16.1/vis.min.css
+```
+
+The `staticassets` directory is set as the root directory for shiny app, in the page source of deployed apps you would therefore see the following calls:
+
+```{html}
+<script src="shared/jquery.min.js"></script>
+```
+
+In the explicit case of jquery, the following code can be used to load the local resource if the CDN is unavailable:
+
+```{html}
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.0.0.min.js"></script>
+<script>
+if (typeof jQuery == "undefined") {
+    document.write(unescape("%3Cscript src="/js/jquery-2.0.0.min.js" type="text/javascript"%3E%3C/script%3E"));
+}
+</script>
+```
 

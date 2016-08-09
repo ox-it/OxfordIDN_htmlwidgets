@@ -6,7 +6,7 @@ This repository was initially created to provide how-to-guides on using htmlwidg
 
 Currently all commits are made against the gh-pages branch, there will therefore be incomplete templates and links to know where. This will be resolved in the near future.
 
-# Interactive Chart with htmlwidgets
+# Interactive Data Visualisations with htmlwidgets
 
 The interactive web is built on JavaScript, from interactive bar charts to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app - htmlwidgets.
 

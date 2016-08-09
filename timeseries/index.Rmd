@@ -1,22 +1,27 @@
 ---
-title: "Live Data htmlwidget Templates"
-author: "Martin John Hadley"
+title: "Interactive timeseries with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
 output: 
   html_document:
     toc: true
     toc_float: true
     number_sections: false
-    code_folding: show
 ---
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
 library(htmltools)
 ```
 
-# What are htmlwidgets?
+<a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/timelines" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
 
-htmlwidgets is a framework for creating interactive data visualisations from JavaScript libraries with ease
-
-## How to get involved
-
-Contact us through [http://idn.ox.ac.uk](http://idn.ox.ac.uk)
+Interactive timeseries, similar to the charts on Google Finance, allow the user to zoom in an out on a time series. They handle dates well.

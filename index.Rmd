@@ -1,13 +1,14 @@
 ---
-title: "Interactive Charts with htmlwidgets"
-author: "Martin John Hadley"
+title: "Interactive Data Visualisations with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
 output: 
   html_document:
     toc: true
     toc_float: true
     number_sections: false
-    code_folding: show
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -16,6 +17,12 @@ knitr::opts_chunk$set(
 )
 library(htmltools)
 ```
+
+<a href="https://github.com/ox-it/LiveData_htmlwidgets" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
 
 The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is documented at http://ox-it.github.io/LiveData_htmlwidgets/charts/BarCharts.
 
@@ -73,41 +80,14 @@ This collection of guides attempts to address the following questions:
 
 Note that these guides were produced for the [Live Data Project](blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project/) run by Oxford University and do not aim to cover *all* htmlwidgets, in the first place only those libraries used in case studies are covered. However, futurue contributions are welcome.
 
-### htmlwidget Comparisons
+## htmlwidget Comparisons
 
 A thorough comparison of the chart types and htmlwidget libraries available is provided [here](http://ox-it.github.io/LiveData_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
 
-### Chart Templates
+## htmlwidget Templates
 
-The following chart templates are currently provided:
-
-- [BarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/BarCharts), [StackedBarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/StackedBarCharts), [LineCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/LineCharts)
-- [Interactive Tables (Datatables)](http://ox-it.github.io/LiveData_htmlwidgets/datatable)
-- Gauges
-- Scattergeo, Choropleth
-- Networks
-- Timelines and Gantt Charts
-
-Chart templates are organised in this repository as follows:
-
+```{r child = 'htmlwidget-templates.Rmd'}
 ```
-chartType
----------| index.html
----------| shiny_Folder
------------------------| ui.R
------------------------| server.R
-```
-
-The index.html file contains a very basic description of the chartType discussed in the templates, and instructions on how to construct the chartType with a variety of different libraries (where possible). This file can be viewed at the following address:
-
-http://ox-it.github.io/LiveData_htmlwidgets/chartType
-
-Where multiple libraries are capable of making comparable visualisations, a shiny app is provided to compare these at the following address:
-
-https://livedataoxford.shinyapps.io/htmlwidget_template_chartType/
-
-Note that multiple shiny apps may be associated with one template.
-
 
 
 

@@ -1,22 +1,28 @@
 ---
-title: "Interactive BarCharts"
+title: "Interactive BarCharts with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
 output: 
   html_document:
     toc: true
     toc_float: true
     number_sections: false
-    code_folding: show
 ---
-
-```{r, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
 	warning = FALSE
 )
+library(htmltools)
 ```
 
-# Interactive BarCharts Tutorial
+<a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/charts/BarCharts" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
 
 This tutorial demonstrates how to create interactive barcharts like the one below using a variety of different libraries, currently including; plotly and highchart. Note that there is currently one interactive shiny app associated with this tutorial:
 
@@ -116,7 +122,7 @@ highchart() %>%
 ```
 
 
-The `highcharter` library distinguishes between horizontal and vertically orientated bar charts by `hc_chart(type = )`; column and bar are verticle and horizontal, respectively. Both varieties of chart are more legible if bars are ordered from largest to smallest. We also add a label for the Y axis. Note that internal to `hc_add_series` the ordered `measure_column` is reversed to achieve this:
+The `highcharter` library distinguishes between horizontal and vertically orientated bar charts by `hc_chart(type = )`; column and bar are verticle and horizontal, respectively. Both varieties of chart are more legible if bars are ordered from largest to smallest, note that internal to `hc_add_series` the ordered `measure_column` is reversed to achieve this:
 
 ```{r}
 aggregate_mean <- aggregate_mean[order(aggregate_mean$Desktop.Items),]
@@ -203,7 +209,7 @@ plot_ly(data = aggregate_number_of_observations,
 
 # Functionalising 
 
-It is convenient to proceduralise the creation of these charts by converting the scripts into functions that can easily be called with different parameters, this is particularly useful in Shiny apps. A function for each charting library considered in this document is provided below.
+It is convenient to proceduralise the creation of these charts by converting the scripts into functions that can easily be called with different parameters, this is particularly useful for in Shiny apps. A function for each charting library considered in this document is provided below.
 
 Note that the aggregation function is the same, for this tutorial, regardless of the visualisation library used.
 

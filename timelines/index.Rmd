@@ -1,20 +1,27 @@
 ---
-title: "Interactive Timelines"
-author: "Martin John Hadley"
+title: "Interactive timelines with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
 output: 
   html_document:
     toc: true
     toc_float: true
     number_sections: false
-    code_folding: show
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
 library(htmltools)
 ```
 
-
-## Interactive Timelines
+<a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/timelines" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
 
 This tutorial demonstrates how to create interactive timelines (or Gantt charts) like the one below using a variety of different libraries, currently including; [ggplot2](http://ggplot2.org) and [plotly](http://plot.ly). Note that the [googleVis](https://github.com/mages/googleVis) library is capable of generating timelines but these depend on Flash and are therefore not covered in this tutorial.
 

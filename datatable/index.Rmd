@@ -1,12 +1,12 @@
 ---
-title: "Interactive Tables"
-author: "Martin John Hadley"
+title: "Interactive Tables with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
 output: 
   html_document:
     toc: true
     toc_float: true
     number_sections: false
-    code_folding: show
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -17,7 +17,12 @@ knitr::opts_chunk$set(
 library(htmltools)
 ```
 
-# Interactive Tables Tutorial
+<a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/datatable" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
 
 This tutorial demonstrates how to create interactive tables like the one below using the [DT](https://rstudio.github.io/DT/) and [rhandsontable](http://jrowen.github.io/rhandsontable/#introduction) libraries, like the one below (built using `DT`). Note that there are three interactive shiny apps associated with this tutorial:
 
@@ -27,11 +32,17 @@ This tutorial demonstrates how to create interactive tables like the one below u
 ```{r, echo = FALSE}
 library(DT)
 library(lubridate)
-desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960")
-desktopItems$Timestamp <- mdy_hms(desktopItems$Timestamp, truncated = 2)
-datatable(desktopItems,
-          filter = 'top', rownames = FALSE,
-          options = list(pageLength = 5, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")
+desktopItems <-
+  read.csv(file = "https://ndownloader.figshare.com/files/5360960")
+desktopItems$Timestamp <-
+  mdy_hms(desktopItems$Timestamp, truncated = 2)
+datatable(
+  desktopItems,
+  filter = 'top',
+  extensions = "Responsive",
+  rownames = FALSE,
+  options = list(pageLength = 5, autoWidth = TRUE)
+) %>% formatDate(~ Timestamp, method = "toUTCString")
 ```
 
 These libraries are useful for visualising almost all rectangular datasets, with support for a variety of data types (dates, strings, URLS, etc).
@@ -64,6 +75,14 @@ library(DT)
 datatable(desktopItems)
 ```
 
+Before beginning to format the columns of the datatable, it is useful to remove the `rownames` as they are typically not that useful for users:
+
+```{r}
+datatable(desktopItems,
+          rownames = FALSE)
+```
+
+
 ## Column Formatting
 
 There are a number of utility functions for formatting columns:
@@ -79,10 +98,12 @@ In the case of date, there are a number of different formats available, which ar
 DT:::DateMethods
 ```
 
-The `format*()` functions must be provided with both a datatable to operate on and a which columns to format, it is therefore convenient to use the `%>%` operator:
+The `format*()` functions must be provided with both a datatable to operate on and which columns to format, it is therefore convenient to use the `%>%` operator:
 
 ```{r}
-datatable(desktopItems) %>% formatDate(~Timestamp, method = "toUTCString")
+datatable(desktopItems,
+          rownames = FALSE) %>% 
+  formatDate(~Timestamp, method = "toUTCString")
 ```
 
 
@@ -92,18 +113,33 @@ The default datatable output includes a box in the top-right corner labelled "se
 
 ```{r}
 datatable(desktopItems,
+          rownames = FALSE,
           filter = 'top',
           options = list(pageLength = 5)) %>% formatDate( ~ Timestamp, method = "toUTCString")
 ```
 
 Please note that at present there is not a simple, non-JavaScript method known for formatting the date range filter.
 
-### Responsive Reflow
+## Collapsing Columns Responsively
+
+Datatables decide a suitable width for them to display all column headings (by default) and do not resize with the page, meaning that the users need to scroll horizontally to read all of the table. This is problematic for two reasons: 1) tables may necessarily have many columns and would never fit on a screen, 2) users may view your table on mobile devices that are very narrow. The modern method of laying out web content well on different screen sizes is called "responsive design" - elements reflow or resize as the page size changes.
+
+Responsive datatables will collapse the columns that cannot be displayed within the width of the host page into green "+" symbols that can be clicked to expand the record, as shown in this screenshot:
+
+<center><img src="images/responsive-datatable.png"/></center>
+
+To enable this responsive behaviour, add the argument `extensions = "Responsive"`; if you're reading this on a big screen you'll need to change the window size to see the collapsing columns.
 
 ```{r}
-datatable(desktopItems,
-          filter = 'top',
-          options = list(pageLength = 5, responsive = TRUE, autoWidth = TRUE)) %>% formatDate( ~ Timestamp, method = "toUTCString")
+datatable(
+  desktopItems,
+  rownames = FALSE,
+  filter = 'top',
+  extensions = "Responsive",
+  options = list(
+    pageLength = 5
+  )
+) %>% formatDate(~ Timestamp, method = "toUTCString")
 ```
 
 ## Server Side Processing
@@ -127,15 +163,41 @@ container_df <- data.frame(
 Datatable is instructed to use ajax to pull the data server side from the JSONP data source as follows:
 
 ```{r}
-datatable(container_df, rownames = FALSE, options = list(
-  pageLength = 5,
-      ajax = list(
-        serverSide = TRUE, processing = TRUE,
-        url = 'https://datatables.net/examples/server_side/scripts/jsonp.php',
-        dataType = 'jsonp'
-      )
-    ))
+datatable(container_df,
+          rownames = FALSE,
+          options = list(
+            pageLength = 5,
+            ajax = list(
+              serverSide = TRUE,
+              processing = TRUE,
+              url = 'https://datatables.net/examples/server_side/scripts/jsonp.php',
+              dataType = 'jsonp'
+            )
+          ))
 ```
+
+## Additional Tweaks
+
+The text displayed within datatables is highly customisable, two frequently desired changes to datatables are the "no records found" text displayed when no records match the filter criteria and changing the label of the "search field" as technically it is a filter and not a search operation. Most of these customisations are considered to be "internationalisation" concerns and therefore addressed through the "language" option of `datatable` as discussed <a href=http://datatables.net/usage/i18n>here</a>.
+
+In the table below both the global "search" label and empty records information has been modified, note the datatable has been filtered by the string "nonexistant" using the `"search"` API as documented <a href="https://datatables.net/reference/api/search()">here</a>.
+
+```{r}
+datatable(
+  desktopItems,
+  rownames = FALSE,
+  filter = 'top',
+  options = list(
+    pageLength = 5,
+    responsive = TRUE,
+    autoWidth = TRUE,
+    "language" = list("search" = "Filter Records here -->", 
+                      "zeroRecords" = "There's absolutely nothing matching that filter"),
+    "search" = list("search" = "nonexistant")
+  )
+) %>% formatDate(~ Timestamp, method = "toUTCString")
+```
+
 
 # rhandsontables
 

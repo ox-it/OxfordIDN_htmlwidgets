@@ -152,8 +152,8 @@ shinyServer(function(input, output, session) {
           input$aggregate_function,
           "mean" = "Average number of desktop items",
           "length" = "Number of respondants"
-        ),
-      displayFurniture = F
+        )
+      # displayFurniture = F
     )
     
   })

@@ -3,11 +3,16 @@ title: "Htmlwidget Templates"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+The following chart templates are currently provided:
 
-Templates are organised as follows:
+- [BarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/BarCharts), [StackedBarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/StackedBarCharts), [LineCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/LineCharts)
+- [Interactive Tables (Datatables)](http://ox-it.github.io/LiveData_htmlwidgets/datatable)
+- Gauges
+- Scattergeo, Choropleth
+- Networks
+- Timelines and Gantt Charts
+
+Chart templates are organised in this repository as follows:
 
 ```
 chartType
@@ -23,6 +28,6 @@ http://ox-it.github.io/LiveData_htmlwidgets/chartType
 
 Where multiple libraries are capable of making comparable visualisations, a shiny app is provided to compare these at the following address:
 
-https://livedataoxford.shinyapps.io/htmlwidget_template_timeline/
+https://livedataoxford.shinyapps.io/htmlwidget_template_chartType
 
-Note that multiple shiny apps may be associated with one template.
+Note that multiple shiny apps may be associated with one template, these may be documented within this repository or elsewhere but links to both documentation and parent Github repositories will be provided within the shiny app.

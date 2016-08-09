@@ -1,8 +1,10 @@
 # About this repository
 
+Note that an interactive version of this document is avialable here: http://ox-it.github.io/LiveData_htmlwidgets/
+
 This repository was initially created to provide how-to-guides on using htmlwidgets for interactive data visualisations by the [Live Data Project](http://blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project) team. Contributions and comments gratefully received.
 
-Note that an interactive version of this document is avialable here: http://ox-it.github.io/LiveData_htmlwidgets/  
+Currently all commits are made against the gh-pages branch, there will therefore be incomplete templates and links to know where. This will be resolved in the near future.
 
 # Interactive Chart with htmlwidgets
 

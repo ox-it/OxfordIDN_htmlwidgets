@@ -48,7 +48,7 @@ highchart(height = 200) %>%
   hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
 ```
 
-The datasets that this tutorial considers are structured as follows:
+The datasets that this tutorial considers are structured as follows (note `knitr::kable` loads the function `kable` to display the `data.frame` attractively):
 
 ```{r example_df, echo=FALSE}
 example_df <- data.frame(

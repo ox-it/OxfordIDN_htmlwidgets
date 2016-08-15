@@ -91,7 +91,7 @@ example_df <- data.frame(
 knitr::kable(example_df)
 ```
 
-Where the there are multiple measures (numerical values) for each category (or *dimension*), there are therefore two interesting stacked bar charts that can be generated:
+Where there are multiple measures (numerical values) for each category (or *dimension*), there are therefore two interesting stacked bar charts that can be generated:
 
 - Total number of observations per category, split by measure
 - Percentage of observations per measure for each category.

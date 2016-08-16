@@ -275,7 +275,7 @@ The `data.frame` could be reordered and provided directly to the highchart visua
 
 2) Achieving this is slightly more difficult than one might initially think - and highchart provides a simple way for ordering bars.
 
-Ordering of series in the `highcharter` library is set using the `index` value of each series - as a small example. Note that the index must start from 0.
+Ordering of series in the `highcharter` library is set using the `index` value of each series. Note that the index must start from 0.
 
 ```{r}
 highchart() %>%

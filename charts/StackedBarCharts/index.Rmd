@@ -28,7 +28,7 @@ This tutorial demonstrates how to create interactive stacked barcharts like the 
 
 ```{r, echo=FALSE}
 library(highcharter)
-stacked_bar_chart_df <- data.frame(
+sample_data <- data.frame(
   "Countries" = c(
     "United Kingdom","France","Saudi Arabia","Egypt","Germany","China","Slovakia","Canada","Estonia","Ireland"
   ),
@@ -72,7 +72,7 @@ stacked_hc_chart <- function(data = NA,
     hc_plotOptions(series = list(stacking = as.character(stacking_type))) %>%
     hc_legend(reversed = TRUE)
 }
-stacked_hc_chart(data = stacked_bar_chart_df,
+stacked_hc_chart(data = sample_data,
                  categories_column = categories_column,
                  measure_columns = measure_columns,
                  stacking_type = "percent",
@@ -96,14 +96,14 @@ Where there are multiple measures (numerical values) for each category (or *dime
 - Total number of observations per category, split by measure
 - Percentage of observations per measure for each category.
 
-Note that this tutorial covers both how to build such a stacked bar chart inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app.
+Note that this tutorial covers both how to build such a stacked bar chart inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app. At the bottom of this file there's a function that will allow you to easily create stacked bar charts for your own data.
 
 # Import and Clean Data
 
 This tutorial uses the `data.frame` below, note that the numbers have been specially chosen to have both varying range and variance for later comparison purposes. 
 
 ```{r}
-stacked_bar_chart_df <- data.frame(
+sample_data <- data.frame(
   "Countries" = c(
     "United Kingdom","France","Saudi Arabia","Egypt","Germany","China","Slovakia","Canada","Estonia","Ireland"
   ),
@@ -129,39 +129,27 @@ Highcharts barcharts are constructed by providing multiple instances of `hc_add_
 
 ```{r}
 library(highcharter)
-highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[,categories_column],
+base_highchart <- highchart() %>%
+  hc_xAxis(categories = sample_data[,categories_column],
            title = categories_column) %>%
   hc_add_series(name = measure_columns[1],
-                data = stacked_bar_chart_df[,measure_columns[1]]) %>%
+                data = sample_data[,measure_columns[1]]) %>%
   hc_add_series(name = measure_columns[2],
-                data = stacked_bar_chart_df[,measure_columns[2]]) %>%
+                data = sample_data[,measure_columns[2]]) %>%
   hc_add_series(name = measure_columns[3],
-                data = stacked_bar_chart_df[,measure_columns[3]]) %>%
+                data = sample_data[,measure_columns[3]]) %>%
   hc_add_series(name = measure_columns[4],
-                data = stacked_bar_chart_df[,measure_columns[4]]) %>%
+                data = sample_data[,measure_columns[4]]) %>%
   hc_add_series(name = measure_columns[5],
-                data = stacked_bar_chart_df[,measure_columns[5]]) %>%
-  hc_chart(type = "column")
+                data = sample_data[,measure_columns[5]])
+
+base_highchart %>% hc_chart(type = "column")
 ```
 
 In many instances it is easier to present bar charts horizontally, in the `highcharter` library this is achieved by changing the type of chart to bar: `hc_chart(type = "bar")`.
 
 ```{r}
-highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[,categories_column],
-           title = categories_column) %>%
-  hc_add_series(name = measure_columns[1],
-                data = stacked_bar_chart_df[,measure_columns[1]]) %>%
-  hc_add_series(name = measure_columns[2],
-                data = stacked_bar_chart_df[,measure_columns[2]]) %>%
-  hc_add_series(name = measure_columns[3],
-                data = stacked_bar_chart_df[,measure_columns[3]]) %>%
-  hc_add_series(name = measure_columns[4],
-                data = stacked_bar_chart_df[,measure_columns[4]]) %>%
-  hc_add_series(name = measure_columns[5],
-                data = stacked_bar_chart_df[,measure_columns[5]]) %>%
-  hc_chart(type = "bar")
+base_highchart %>% hc_chart(type = "bar")
 ```
 
 ## Programmatically Adding hc_add_series
@@ -188,13 +176,13 @@ Using this pattern we can build our highchart for an arbitrary number of measure
 
 ```{r}
 generated_chart <- highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[, categories_column],
+  hc_xAxis(categories = sample_data[, categories_column],
            title = categories_column)
 
 invisible(lapply(measure_columns, function(column) {
   generated_chart <<-
     hc_add_series(hc = generated_chart, name = column,
-                  data = stacked_bar_chart_df[, column])
+                  data = sample_data[, column])
 }))
 
 generated_chart %>%  hc_chart(type = "bar")
@@ -206,13 +194,13 @@ The bars can be made to stack such that the total length of the bars is equal to
 
 ```{r}
 generated_chart <- highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[, categories_column],
+  hc_xAxis(categories = sample_data[, categories_column],
            title = categories_column)
 
 invisible(lapply(measure_columns, function(column) {
   generated_chart <<-
     hc_add_series(hc = generated_chart, name = column,
-                  data = stacked_bar_chart_df[, column])
+                  data = sample_data[, column])
 }))
 
 generated_chart <- generated_chart %>%
@@ -239,13 +227,13 @@ Often it is more useful to show the distribution of values for each category, of
 
 ```{r}
 generated_chart <- highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[, categories_column],
+  hc_xAxis(categories = sample_data[, categories_column],
            title = categories_column)
 
 invisible(lapply(measure_columns, function(column) {
   generated_chart <<-
     hc_add_series(hc = generated_chart, name = column,
-                  data = stacked_bar_chart_df[, column])
+                  data = sample_data[, column])
 }))
 
 generated_chart %>%
@@ -263,7 +251,7 @@ The default behaviour of highchart is to order the bars according to which was a
 Using `lapply` the relative variance of each variable can easily be computed, and an ordering computed by the function `order`, as already identified the bars of a stacked bar chart are prepended to the chart and so we need the decreasing order.. Note that as `lapply` generated a list the function `unlist` is used to return a vector that can be given to `order`. 
 
 ```{r}
-var_vector <- unlist(lapply(measure_columns, function(x)var(stacked_bar_chart_df[,x])))
+var_vector <- unlist(lapply(measure_columns, function(x)var(sample_data[,x])))
 order(var_vector, decreasing = TRUE)
 ```
 
@@ -277,16 +265,16 @@ Ordering of series in the `highcharter` library is set using the `index` value o
 
 ```{r}
 highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[,categories_column],
+  hc_xAxis(categories = sample_data[,categories_column],
            title = categories_column) %>%
   hc_add_series(name = measure_columns[1],
-                data = stacked_bar_chart_df[,measure_columns[1]],
+                data = sample_data[,measure_columns[1]],
                 index = 0) %>%
   hc_add_series(name = measure_columns[2],
-                data = stacked_bar_chart_df[,measure_columns[2]],
+                data = sample_data[,measure_columns[2]],
                 index = 2) %>%
   hc_add_series(name = measure_columns[3],
-                data = stacked_bar_chart_df[,measure_columns[3]],
+                data = sample_data[,measure_columns[3]],
                 index = 1) %>%
   hc_plotOptions(series = list(stacking = "percent")) %>%
   hc_chart(type = "bar") %>%
@@ -296,21 +284,24 @@ highchart() %>%
 In the code below the `lapply` expression has been modified so that we iteratively extract values from both the `measure_columns` and `ordered_measure_vars` variables:
 
 ```{r}
+## index in highchart must start from 0, order starts from 1
+## hence subtracting 1
 ordered_measure_vars <-
   order(unlist(lapply(measure_columns, function(x)
-    var(stacked_bar_chart_df[, x]))),
+    var(sample_data[, x]))),
     decreasing = TRUE) - 1
 
 generated_chart <- highchart() %>%
-  hc_xAxis(categories = stacked_bar_chart_df[, categories_column],
+  hc_xAxis(categories = sample_data[, categories_column],
            title = categories_column)
 
+## 1:length(n) generates vector c(1,2, ..., length(n))
 invisible(lapply(1:length(measure_columns), function(colNumber) {
   generated_chart <<-
     hc_add_series(
       hc = generated_chart,
       name = measure_columns[colNumber],
-      data = stacked_bar_chart_df[, measure_columns[colNumber]],
+      data = sample_data[, measure_columns[colNumber]],
       index = ordered_measure_vars[colNumber]
     )
 }))
@@ -321,16 +312,16 @@ generated_chart %>%
   hc_legend(reversed = TRUE)
 ```
 
-## Functionalised Stacked Barchart
+# Functionalised Stacked Barchart
 
-The steps above can be combined into a easy to use utility function:
+The following function allows stacked bar charts to be easily created for all libraries covered in this tutorial.
 
 ```{r}
-stacked_hc_chart <- function(data = NA,
+stacked_bar_chart <- function(data = NA,
                              categories_column = NA,
                              measure_columns = NA,
                              stacking_type = NA,
-                             ordering_function = NA) {
+                             ordering_function = c) {
   
   ordered_measure <-
     order(unlist(lapply(measure_columns, function(x) {
@@ -362,10 +353,28 @@ stacked_hc_chart <- function(data = NA,
 To replicate the chart made in the "Swapped Order" section we can simply call the function as follows:
 
 ```{r}
-stacked_hc_chart(data = stacked_bar_chart_df,
-                 categories_column = categories_column,
-                 measure_columns = measure_columns,
-                 stacking_type = "percent",
-                 ordering_function = var)
+stacked_bar_chart(
+  data = sample_data,
+  categories_column = categories_column,
+  measure_columns = measure_columns,
+  stacking_type = "percent",
+  ordering_function = var
+)
 ```
+
+Note that to ensure that the order of categories in each bar is not modified by the `stacked_bar_chart` function, use `ordering_function = c`. Or take advantage of it being the default argument!
+
+```{r}
+stacked_bar_chart(
+  data = sample_data,
+  categories_column = categories_column,
+  measure_columns = measure_columns,
+  stacking_type = "percent"
+)
+```
+
+
+
+
+
 

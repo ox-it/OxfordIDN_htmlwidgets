@@ -100,7 +100,7 @@ Note that this template covers both how to build such a stacked bar chart inside
 
 # Import and Clean Data
 
-This tutorial uses the `data.frame` below, note that the number have been specially chosen to have both varying range and variance for later comparison purposes.
+This tutorial uses the `data.frame` below, note that the numbers have been specially chosen to have both varying range and variance for later comparison purposes. As is common when working with data.frames, we override the default behaviour of converting all strings into factors using the argument `stringsAsFactors`.
 
 ```{r}
 stacked_bar_chart_df <- data.frame(

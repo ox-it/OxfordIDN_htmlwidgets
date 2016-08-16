@@ -84,6 +84,7 @@ Using `cut` we can compute the number of observations per bin as a factor we can
 Note that we create a new variable to store this modified data.frame
 
 ```{r}
+time_binned_stacked_area_data <- stacked_area_data
 time_binned_stacked_area_data$time_bin <- cut(stacked_area_data[,start_column], 
                                   pretty_event_breaks, right = FALSE, dig.lab = 4)
 time_binned_stacked_area_data
@@ -130,18 +131,28 @@ We need to calculate the cumulative counts against across both the `time_bin` an
 - Group by a category and count observations per time_bin
 
 ```{r}
+library(dplyr)
 group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
   count(time_bin)
 ```
 
-- Use `cumsum` to calculat the cumulative observations per category, select only the interesting 
+- Use `complete` from the `tidyr` library to ensure that empty factors are not ignored
 
 ```{r}
-group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
+library(tidyr)
+completed_time_bin_count <- group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
   count(time_bin) %>%
-  mutate("cumsum" = cumsum(n))
+  complete(time_bin)
 ```
 
+- Replace the `NA` values with 0 and then use `cumsum` to calculate the cumulative total:
+
+```{r}
+completed_time_bin_count$n[is.na(completed_time_bin_count$n)] <- 0
+mutate(completed_time_bin_count, "cumsum" = cumsum(n))
+```
+
+This operation will be used later to prepare data for the visualisation libraries.
 
 # Highchart
 
@@ -194,34 +205,36 @@ highchart() %>%
 The cumulative count operation from above must be passed to the `highchart` appropriately, above we defined the following steps, which generates long formatted data (i.e. there are a minimal number of columns)
 
 ```{r}
-group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
+grouped_tally <- group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
   count(time_bin) %>%
-  mutate("cumsum" = cumsum(n))
+  complete(time_bin)
+
+grouped_tally$n[is.na(grouped_tally$n)] <- 0
+grouped_tally <- mutate(grouped_tally, "cumsum" = cumsum(n))
 ```
 
 Highchart requires a vector per series visualised, we therefore use `spread` from the `tidyr` library and prepare our data as a `data.frame` for use in highcharts:
 
 ```{r}
 library(tidyr)
-grouped_cumsum <- group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
-  count(time_bin) %>%
-  # complete(time_bin) %>%
-  mutate("cumsum" = cumsum(n)) %>%
+library(zoo)
+grouped_cumsum <- grouped_tally %>%
   spread(location, cumsum) %>%
   as.data.frame()
-grouped_cumsum
 
-grouped_cumsum$time_bin
 
+
+grouped_cumsum <- na.locf(grouped_cumsum)
+str(grouped_cumsum)
 ```
 
 
 ```{r}
 highchart() %>%
   hc_chart(type = "area") %>%
-  hc_xAxis(categories = grouped_cumsum$) %>%
-  hc_add_series(data = 11:17) %>%
-  hc_add_series(data = 21:15) %>%
+  hc_xAxis(categories = grouped_cumsum$time_bin) %>%
+  hc_add_series(data = grouped_cumsum$A) %>%
+  hc_add_series(data = grouped_cumsum$C) %>%
   hc_plotOptions(area = list(stacking = "normal"))
 ```
 

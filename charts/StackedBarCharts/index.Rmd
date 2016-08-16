@@ -171,9 +171,7 @@ It is inconvenient to manually type out `hc_add_series` for each measure, and pr
 The basic syntax is quite simple: the first argument is a vector (see [this tutorial](http://ox-it.github.io/Live-Data_Scripts-and-Templates/R-Scripts/lapply/) for further details)
 
 ```{r}
-lapply(measure_columns, function(x){
-  nchar(x)
-})
+lapply(measure_columns, nchar)
 ```
 
 Assignments within the body of `function` are unique to that environment, in order to affect a global object it is necessary to use the `<<-`; we also use `invisible` to prevent `lapply` from printing it's output. For advanced users, this story isn't precisely accurate - consult the documentation for details.

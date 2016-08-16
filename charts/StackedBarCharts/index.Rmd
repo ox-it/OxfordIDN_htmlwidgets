@@ -96,11 +96,11 @@ Where there are multiple measures (numerical values) for each category (or *dime
 - Total number of observations per category, split by measure
 - Percentage of observations per measure for each category.
 
-Note that this template covers both how to build such a stacked bar chart inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app.
+Note that this tutorial covers both how to build such a stacked bar chart inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app.
 
 # Import and Clean Data
 
-This tutorial uses the `data.frame` below, note that the numbers have been specially chosen to have both varying range and variance for later comparison purposes. As is common when working with data.frames, we override the default behaviour of converting all strings into factors using the argument `stringsAsFactors`.
+This tutorial uses the `data.frame` below, note that the numbers have been specially chosen to have both varying range and variance for later comparison purposes. 
 
 ```{r}
 stacked_bar_chart_df <- data.frame(
@@ -116,7 +116,7 @@ stacked_bar_chart_df <- data.frame(
 )
 ```
 
-An advanced version of this template might attempt to automatically infer the measure and appropriate categories for the data, in this template we explicitly decide which columns are categories (or dimensions) and which column is the measure:
+An advanced version of this tutorial might attempt to automatically infer the measure and appropriate categories for the data, in this tutorial we explicitly decide which columns are categories (or dimensions) and which column is the measure:
 
 ```{r}
 categories_column <- "Countries"
@@ -168,7 +168,7 @@ highchart() %>%
 
 It is inconvenient to manually type out `hc_add_series` for each measure, and prone to error. It's therefore useful to be able to generate these programmatically. In order to achieve this we need to choose a method for constructing expressions, in other languages we might choose to do this using a `for` loop but it is slightly more comfortable to write this using `lapply`.
 
-The basic syntax is quite simple: the first argument is a vector (see [this tutorial](http://ox-it.github.io/Live-Data_Scripts-and-Templates/R-Scripts/lapply/) for further details)
+The basic syntax is quite simple: the first argument is a vector (see [this tutorial](http://ox-it.github.io/Live-Data_Scripts-and-tutorials/R-Scripts/lapply/) for further details)
 
 ```{r}
 lapply(measure_columns, nchar)

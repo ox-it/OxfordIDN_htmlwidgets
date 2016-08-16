@@ -271,7 +271,7 @@ order(var_vector, decreasing = TRUE)
 
 The `data.frame` could be reordered and provided directly to the highchart visualisation, but there are two good reasons not to do this:
 
-1) Ordering operations should be applied within the visualisation function, and not applied to the data as the data's original ordering may not only be important but should be considered an instrinsic property of the data
+1) Ordering operations should be applied within the visualisation function, and not applied to the data as the data's original ordering may be important and should be considered an instrinsic property of the data
 
 2) Achieving this is slightly more difficult than one might initially think - and highchart provides a simple way for ordering bars.
 

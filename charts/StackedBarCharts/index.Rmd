@@ -318,11 +318,11 @@ The following function allows stacked bar charts to be easily created for all li
 
 ```{r}
 stacked_bar_chart <- function(data = NA,
-                             categories_column = NA,
-                             measure_columns = NA,
-                             stacking_type = NA,
-                             ordering_function = c) {
-  
+                              categories_column = NA,
+                              measure_columns = NA,
+                              stacking_type = NA,
+                              ordering_function = c,
+                              explicit_order = NA) {
   ordered_measure <-
     order(unlist(lapply(measure_columns, function(x) {
       ordering_function(data[, x])
@@ -339,7 +339,12 @@ stacked_bar_chart <- function(data = NA,
         hc = chart,
         name = measure_columns[colNumber],
         data = data[, measure_columns[colNumber]],
-        index = ordered_measure[colNumber]
+        index = {
+          if (is.na(explicit_order)) {
+            ordered_measure[colNumber]
+          } else
+            explicit_order[colNumber]
+        }
       )
   }))
   
@@ -373,7 +378,27 @@ stacked_bar_chart(
 )
 ```
 
+## Explicit Ordering
 
+Sometimes it is not desireabe to order bars by a function, i.e the variance, but instead explicitly order bar "A" after "B" and so on. This is controlled using the argument `explicit_order`. If a vector is given then bars will be ordered accordingly, and `ordering_function` will be ignored.
+
+```{r}
+bar_order <- list(
+  "Business" = 4,
+  "Overlay" = 3,
+  "Personal" = 2,
+  "Teleconference" = 0,
+  "Unclassified" = 1
+)
+bar_order_v <- as.numeric(bar_order)
+stacked_bar_chart(
+  data = sample_data,
+  categories_column = categories_column,
+  measure_columns = measure_columns,
+  stacking_type = "percent",
+  explicit_order = bar_order_v
+)
+```
 
 
 

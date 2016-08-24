@@ -367,16 +367,19 @@ stacked_bar_chart(
 )
 ```
 
-Note that to ensure that the order of categories in each bar is not modified by the `stacked_bar_chart` function, use `ordering_function = c`. Or take advantage of it being the default argument!
+Note that to ensure that the order of categories in each bar is not modified by the `stacked_bar_chart` function, use `ordering_function = c`. Or take advantage of it being the default argument! It's also really simple to add extras to the visualisation by piping in additional functions from the `highcharter` library:
 
 ```{r}
 stacked_bar_chart(
   data = sample_data,
   categories_column = categories_column,
   measure_columns = measure_columns,
-  stacking_type = "percent"
-)
+  stacking_type = "normal"
+) %>%
+  hc_yAxis(max = 200) %>%
+  hc_title(text = "Custom Title for Chart")
 ```
+
 
 ## Explicit Ordering
 
@@ -399,7 +402,3 @@ stacked_bar_chart(
   explicit_order = bar_order_v
 )
 ```
-
-
-
-

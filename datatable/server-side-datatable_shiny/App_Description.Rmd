@@ -1,5 +1,5 @@
 <p>
-This Shiny app demonstrates the ability to use the `datatables` library to visualise data loaded from an external database and paginated server-side, see <a href="http://ox-it.github.io/LiveData_htmlwidgets/datatable/#server_side_processing">here</a> for further details and note that the example is based on <a href="http://rstudio.github.io/DT/server.html">this</a>.
+This Shiny app demonstrates the ability to use the `datatables` library to visualise data loaded from an external database and paginated server-side, see <a href="http://ox-it.github.io/OxfordIDN_htmlwidgets/datatable/#server_side_processing">here</a> for further details and note that the example is based on <a href="http://rstudio.github.io/DT/server.html">this</a>.
 <p>
 
 
@@ -7,4 +7,4 @@ This Shiny app demonstrates the ability to use the `datatables` library to visua
 
 - Select rows in the `datatable` and a list of the first names from the selected rows will be shown.
 
-<p>The code for this shiny app is available on <a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/datatable/server-side-datatable_shiny">GitHub</a></p>
+<p>The code for this shiny app is available on <a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/datatable/server-side-datatable_shiny">GitHub</a></p>

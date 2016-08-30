@@ -7,4 +7,4 @@
 - Drag a rectangular area over the chart to zoom in (double-click to zoom out)
 - Further controls are shown in the top right of the visualisation when your cursor enters the chart
 
-<p>The code for this shiny app is available on <a href="https://github.com/ox-it/LiveData_htmlwidgets/tree/gh-pages/timelines">GitHub</a></p>
+<p>The code for this shiny app is available on <a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/timelines">GitHub</a></p>

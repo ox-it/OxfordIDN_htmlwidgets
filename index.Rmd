@@ -82,7 +82,7 @@ Note that these guides were produced for the [Live Data Project](blogs.it.ox.ac.
 
 ## htmlwidget Comparisons
 
-A thorough comparison of the chart types and htmlwidget libraries available is provided [here](http://ox-it.github.io/LiveData_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
+A diverse (but not complete) comparison of the chart types and htmlwidget libraries available from CRAN is provided [here](http://ox-it.github.io/LiveData_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
 
 ## htmlwidget Templates
 

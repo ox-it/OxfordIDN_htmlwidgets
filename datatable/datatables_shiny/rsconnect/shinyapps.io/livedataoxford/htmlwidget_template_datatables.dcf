@@ -1,9 +1,0 @@
-name: htmlwidget_template_datatables
-account: livedataoxford
-server: shinyapps.io
-appId: 116766
-bundleId: 516000
-url: https://livedataoxford.shinyapps.io/htmlwidget_template_datatables/
-when: 1469549519.06512
-asMultiple: FALSE
-asStatic: FALSE

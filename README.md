@@ -1,6 +1,6 @@
 # About this repository
 
-Note that an interactive version of this document is avialable here: http://ox-it.github.io/LiveData_htmlwidgets/
+Note that an interactive version of this document is avialable here: http://ox-it.github.io/OxfordIDN_htmlwidgets/
 
 This repository was initially created to provide how-to-guides on using htmlwidgets for interactive data visualisations by the [Live Data Project](http://blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project) team. Contributions and comments gratefully received.
 
@@ -31,8 +31,8 @@ Note that these guides were produced for the [Live Data Project](blogs.it.ox.ac.
 
 The following chart templates are currently provided:
 
-- [BarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/BarCharts), [StackedBarCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/StackedBarCharts), [LineCharts](http://ox-it.github.io/LiveData_htmlwidgets/charts/LineCharts)
-- [Interactive Tables (Datatables)](http://ox-it.github.io/LiveData_htmlwidgets/datatable)
+- [BarCharts](http://ox-it.github.io/OxfordIDN_htmlwidgets/charts/BarCharts), [StackedBarCharts](http://ox-it.github.io/OxfordIDN_htmlwidgets/charts/StackedBarCharts), [LineCharts](http://ox-it.github.io/OxfordIDN_htmlwidgets/charts/LineCharts)
+- [Interactive Tables (Datatables)](http://ox-it.github.io/OxfordIDN_htmlwidgets/datatable)
 - Gauges
 - Scattergeo, Choropleth
 - Networks
@@ -50,7 +50,7 @@ chartType
 
 The index.html file contains a very basic description of the chartType discussed in the templates, and instructions on how to construct the chartType with a variety of different libraries (where possible). This file can be viewed at the following address:
 
-http://ox-it.github.io/LiveData_htmlwidgets/chartType
+http://ox-it.github.io/OxfordIDN_htmlwidgets/chartType
 
 Where multiple libraries are capable of making comparable visualisations, a shiny app is provided to compare these at the following address:
 

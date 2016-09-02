@@ -7,7 +7,11 @@ output:
     toc: true
     toc_float: true
     number_sections: false
+    css: ../../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../../gh-pages_global/_navbar.html
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = TRUE,

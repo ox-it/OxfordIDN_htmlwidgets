@@ -7,7 +7,12 @@ output:
     toc: true
     toc_float: true
     number_sections: false
+    css: ../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../gh-pages_global/_navbar.html
 ---
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -24,12 +29,12 @@ library(htmltools)
 </a>
 
 
-Charts is the largest section 
+Charts are great
 
-```{r child = 'BarCharts/index.Rmd'}
-```
+# Categorical Charts
 
+ss
 
-## Section below included bar charts
+# Comparative Charts
 
-Yesssire
+ddd

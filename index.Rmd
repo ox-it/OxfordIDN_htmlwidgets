@@ -1,0 +1,137 @@
+---
+title: "Interactive Data Visualisations with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: gh-pages_global/_navbar.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+
+
+<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is documented at http://ox-it.github.io/OxfordIDN_htmlwidgets/charts/BarCharts.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(highcharter)
+desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960")
+measure_column <- "Desktop.Items"
+categories <- c("Operating.System","University.Department","University","Country")
+selected_dimension <- categories[1]
+aggregate_number_of_observations <- aggregate(data = desktopItems, eval(as.name(measure_column)) ~ eval(as.name(selected_dimension)), FUN = length)
+colnames(aggregate_number_of_observations) <- c(selected_dimension,"Desktop.Items")
+aggregate_number_of_observations <- aggregate_number_of_observations[order(aggregate_number_of_observations$Desktop.Items),]
+format_label <- function(dimension){
+  gsub(pattern = "[.]", replacement = " ", x = dimension)
+}
+highchart(height = 200) %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = aggregate_number_of_observations[,selected_dimension]) %>%
+  hc_add_series(name = format_label(selected_dimension), data = rev(aggregate_number_of_observations[,measure_column])) %>%
+  hc_yAxis(title = list(text = "Mean Number of Desktop Items")) %>%
+  hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
+```
+
+In order to generate these charts, R must generate the requisite HTML and JavaScript code for the visualisations. The RStudio company has made this process easy by developing a library called `htmlwidgets` which acts as a framework for building JavaScript bindings - which simply means: 
+
+```
+htmlwidgets provides standardised tools to build secondary R packages that bind to JavaScript libraries, the functions in these R packages can be used to generate the same output the original JavaScript library would
+```
+
+A popular visualisation library used in this tutorial is <a href=http://www.plot.ly>plot.ly</a>, the developers for plot.ly have created a library using `htmlwidgets` called `plotly` that allows interactive charts, maps and more to be generated directly from R code. Note that if you are following along with the code samples in this document you are advised to use RStudio which provides a built-in web viewer within which visualisations can be seen. 
+
+The code below generates an interactive scatterplot using the `plotly.js` library:
+
+```{r}
+library(plotly)
+library(gapminder)
+plot_ly(data = gapminder,
+        x = gapminder$year,
+        y = gapminder$lifeExp,
+        group = gapminder$continent,
+        text = gapminder$country,
+        mode = "markers")
+```
+
+# What's in these guides? 
+
+There are over 15 CRAN-hosted libraries that utilise htmlwidgets for creating interactive content, the majority of these libraries are well documented at <a href="http://www.htmlwidgets.org">htmlwidgets.org</a>. The documentation at htmlwidgets.org is focused on individual libraries, it does not attempt to group them or compare the utility of the different libraries for specific types of charts.
+
+This collection of guides attempts to address the following questions:
+
+- Which library is capable of making chart X?
+- Which charts can be made with library X?
+- What type of data can be displayed with each chart/library?
+- How does the process for creating chart X compare across the available libraries?
+
+Note that these guides were produced for the [Live Data Project](blogs.it.ox.ac.uk/acit-rs-team/projects/live-data-project/) run by Oxford University and do not aim to cover *all* htmlwidgets, in the first place only those libraries used in case studies are covered. However, futurue contributions are welcome.
+
+## htmlwidget Comparisons
+
+A diverse (but not complete) comparison of the chart types and htmlwidget libraries available from CRAN is provided [here](http://ox-it.github.io/OxfordIDN_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
+
+## htmlwidget Templates
+
+```{r child = 'htmlwidget-templates.Rmd'}
+```
+
+# htmlwidgets and Future Proofing Visualisation
+
+As htmlwidgets are dependent on visualisation JavaScript libraries that are themselves dependent on (often) multiple other libraries and/or frameworks the long term viabiity of a htmlwidget visualisation must be considered. These tutorials mostly consider the utilisation of htmlwidgets within RMarkdown documents but there are also multiple examples of the visualisations being used in Shiny apps, different advice is relevant to the two different technologies.
+
+## RMarkdown and HTML
+
+When an RMarkdown file is knitted together to output a HTML document, all requisite JavaScript for any embedded htmlwidgets is compressed into Base64 strings and saved into the resultant .html file. If the .html source was inspected you would find the following:
+
+```{html}
+<script src="data:application/x-javascript;base64,compressedJavaScript="></script
+```
+
+This is relatively future-proof, in that no external CDN is needed to load the JavaScript for your visualisations - instead the JS is in your .html file. However, as browsers and web-enabled form factors improve there may be new features or breaking changes that means the JS embedded into your pages does not behave as well as it *should* do as it has stagnated.
+
+XXX: How to get the RMarkdown document to generate itself such that the compressed javascript is optionally called?
+
+## Shiny Apps
+
+Shiny servers (including the shinyapps.io service) provide a storage solution for static assets like CSS and JavaScript, so when your Shiny app is deployed a copy of the requisite CSS and JS is uploaded to the server and called locally from the following path: 
+
+```{html}
+shinyaccount.shinyapps.io/shinyapp/staticassets/shared/vis-4.16.1/vis.min.css
+```
+
+The `staticassets` directory is set as the root directory for shiny app, in the page source of deployed apps you would therefore see the following calls:
+
+```{html}
+<script src="shared/jquery.min.js"></script>
+```
+
+In the explicit case of jquery, the following code can be used to load the local resource if the CDN is unavailable:
+
+```{html}
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.0.0.min.js"></script>
+<script>
+if (typeof jQuery == "undefined") {
+    document.write(unescape("%3Cscript src="/js/jquery-2.0.0.min.js" type="text/javascript"%3E%3C/script%3E"));
+}
+</script>
+```
+

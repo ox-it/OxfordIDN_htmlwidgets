@@ -1,0 +1,70 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Highcharter Gotchas
+
+## Single Character Labels for solitary BarChart
+
+Consider the following dataset:
+
+```{r}
+data <- data.frame(
+  "country" = c("greece","ireland","canada"),
+  "n" = 1:3,
+  stringsAsFactors = F
+)
+```
+
+Highchart will display this attractively:
+
+```{r}
+highchart() %>%
+      hc_chart(type = "bar") %>%
+      hc_xAxis(categories = unique(data[, "country"])) %>%
+      hc_add_series(name = "Number of Things", data = data$n)
+```
+
+But when only one element is displayed the label is truncated to one character!
+
+```{r}
+one_bar <- data[2,]
+highchart() %>%
+      hc_chart(type = "bar") %>%
+      hc_xAxis(categories = "Bar Label") %>%
+      hc_add_series(name = "Number of Things", data = one_bar$n)
+```
+
+To ensure that this wor
+
+```{r}
+one_bar <- data[2,]
+highchart() %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = list("Bar Label")) %>%
+  hc_add_series(name = "Number of Things", data = one_bar$n)
+```
+
+Needs to be a list!
+
+```{r}
+highchart() %>%
+      hc_chart(type = "bar", animation = FALSE, zoomType = "x", panning = TRUE, panKey = 'shift') %>%
+      hc_plotOptions(series = list(turboThreshold = 10000)) %>%
+      hc_xAxis(categories = as.list(unique(data[, "sitecountry"]))) %>%
+      hc_add_series(name = "Number of Things", data = data$n)
+```
+
+```{r}
+highchart() %>%
+  hc_chart(type = "bar") %>%
+  hc_xAxis(categories = list("Bar Label")) %>%
+  hc_add_series(name = "Number of Things", data = 5)
+```
+
+

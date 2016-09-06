@@ -1,0 +1,22 @@
+---
+title: "Plotly"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Hide Plotly Furniture 
+
+https://plot.ly/javascript/configuration-options/
+
+Hide the modebar!
+
+```{r}
+library(plotly)
+plot_ly(x = 1:5,
+        y = 11:15) %>%
+  config(displayModeBar = F)
+```
+

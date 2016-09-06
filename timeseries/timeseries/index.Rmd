@@ -1,0 +1,98 @@
+---
+title: "Interactive Time Series"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: gh-pages_global/_navbar.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+
+<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+# Data
+
+Using Otto data
+
+```{r}
+library(rfigshare)
+fs_deposit_id <- 3761562
+deposit_details <- fs_details(fs_deposit_id)
+deposit_details <- unlist(deposit_details$files)
+deposit_details <- data.frame(split(deposit_details, names(deposit_details)),stringsAsFactors = F)
+
+timeseries_file_names <- deposit_details$name[grepl("OLIdata_",deposit_details$name)]
+
+timeseries_most_recent_file <-
+  timeseries_file_names[grepl(max(as.Date(
+    gsub(".*_|[.txt]*", "", timeseries_file_names), "%Y-%m-%d"
+  )), timeseries_file_names)]
+
+deposit_details[deposit_details$name == timeseries_most_recent_file,]
+
+timeseries_download <- deposit_details[deposit_details$name == timeseries_most_recent_file,]$download_url
+
+txt_import <- read.table(timeseries_download,sep = ",",stringsAsFactors = F)
+
+colnames(txt_import) <- as.character(txt_import[1,])
+
+txt_import <- txt_import[2:nrow(txt_import),]
+
+txt_import$date <- as.Date(txt_import$date)
+txt_import$count <- as.numeric(txt_import$count)
+## Make symbol for visualising:
+gig_economy_data <- txt_import
+
+```
+
+
+# Highstock
+
+Single time series
+
+```{r}
+library(highcharter)
+highchart() %>% 
+      hc_add_series_xts(gig_economy_data, name = input$selected_occupation)
+```
+
+## Multiple 
+
+```{r}
+gig_economy_data$occupation %>% unique() %>% dput()
+
+selected_categories <- c("Creative and multimedia", "Professional services", 
+                         "Sales and marketing support")
+
+hc <- highchart()
+
+invisible(lapply(selected_categories,
+       function(x){
+         filtered <- gig_economy_data[gig_economy_data$occupation == x,]
+         hc <<- hc %>% 
+           hc_add_series_xts(xts(filtered$count, filtered$date), name = x)
+       }))
+hc
+
+```
+
+
+

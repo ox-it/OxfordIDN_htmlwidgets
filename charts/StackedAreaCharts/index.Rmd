@@ -1,0 +1,310 @@
+---
+title: "Interactive Stacked Area Charts with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: ../../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../../gh-pages_global/_navbar.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/charts/StackedAreaCharts" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+
+This tutorial demonstrates how to create interactive stacked barcharts like the one below using a variety of different libraries, currently limited to; highchart.
+
+```{r}
+"not written yet"
+```
+
+The datasets that this tutorial considers are structured as follows:
+
+```{r example_df, echo=FALSE}
+example_df <- data.frame(
+  "Unique ID" = 1:3,
+  "Earliest Possible Date" = c(1000,1500, 2000),
+  "Latest Possible Date" = c(1050, 1550, 2050),
+  "Category 1" = c("A","B","B"),
+  "Category 2" = c("X","Y","Z")
+)
+## Use kable from the knitr library to display the data.frame prettily
+knitr::kable(example_df)
+```
+
+The data consists of multiple events that occured between two known dates ("earlies" and "latest" possible) that are categorised into multiple categories. Our scripts will calculate the cumulative number of observations for each category over time.
+
+Note that while this tutorial does cover the computation of "observations per time period" there are many instances where your data may not require such processsing - this tutorial will still be useful for such cases. This template covers both how to build such a stacked area chart inside of an HTML RMarkdown file and how to functionalise the code so as to conveniently switch between different categories and metrics in a Shiny app.
+
+# Import and Clean Data
+
+This tutorial uses the `data.frame` below, note that the number have been specially chosen to have both varying range and variance for latr comparison purposes.
+
+```{r}
+stacked_area_data <- data.frame(
+  "id" = 1:10,
+  "start" = c(-1000, -500, 10, 100, -1000, -500, 10, 100, -900, -100),
+  "end" = c(-950, -450, 60, 150, -980, -420, 40, 120, -830, -50),
+  "location" = c(rep("A",4), rep("B",4), rep("C",2)),
+  "type" = c(rep("open", 5), rep("closed", 5))
+)
+```
+
+An advanced version of this template might attempt to automatically infer the categories and appropriate start/end columns for the data, in this template we explicitly decide which columns to use:
+
+```{r}
+start_column <- "start"
+end_column <- "end"
+category_columns <- c("location", "type")
+```
+
+## Number of Observations per Period
+
+The function `pretty` allows us to split the time range of interest into roughly equally spaces divisions:
+
+```{r}
+pretty_event_breaks <- pretty(stacked_area_data[,start_column])
+pretty_event_breaks
+```
+
+Using `cut` we can compute the number of observations per bin as a factor we can add to the data.frame, setting `right = FALSE` so that the earliest value is included in the earliest bin. The `dig.lab` argument controls when scientific notation is used for the levels formatting, in the cases of dates we should be safe in setting `dig.lab = 4` for most human era time scales.
+
+Note that we create a new variable to store this modified data.frame
+
+```{r}
+time_binned_stacked_area_data <- stacked_area_data
+time_binned_stacked_area_data$time_bin <- cut(stacked_area_data[,start_column], 
+                                  pretty_event_breaks, right = FALSE, dig.lab = 4)
+time_binned_stacked_area_data
+```
+
+The levels of the `time_bin` are fairly ugly and will not look attractive in our visualisation, some beautification is easy to add using `gsub`:
+
+```{r}
+pretty_bin_labels <- gsub("[[]|[)]","",levels(time_binned_stacked_area_data$time_bin))
+# pretty_bin_labels <- gsub(","," to ",pretty_bin_labels)
+levels(time_binned_stacked_area_data$time_bin) <- pretty_bin_labels
+time_binned_stacked_area_data
+```
+
+Now we've proven it works, we need a utility function that will add `time_bin` column to a `data.frame`:
+
+```{r}
+add_pretty_time_bin <- function(data = NA){
+  
+  time_binned_df <- data
+  
+  pretty_event_breaks <- pretty(time_binned_df[,start_column])
+  
+  time_bin_factor <- cut(time_binned_df[,start_column], 
+                                  pretty_event_breaks, right = FALSE, dig.lab = 4)
+  
+  time_bin_labels <- gsub("[[]|[)]","",levels(time_bin_factor))
+  levels(time_bin_factor) <- time_bin_labels
+  
+  time_binned_df$time_bin <- time_bin_factor
+  
+  time_binned_df
+}
+```
+
+Now that we have a function for adding prettified time bins we need to decide how to compute the cumulative count per category, first lets use the above function:
+
+```{r}
+time_binned_stacked_area_data <- add_pretty_time_bin(stacked_area_data)
+```
+
+We need to calculate the cumulative counts against across both the `time_bin` and selected category, this is most easily achieved using functions from the `dplyr` library and is built up as follows:
+
+- Group by a category and count observations per time_bin
+
+```{r}
+library(dplyr)
+group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
+  count(time_bin)
+```
+
+- Use `complete` from the `tidyr` library to ensure that empty factors are not ignored
+
+```{r}
+library(tidyr)
+completed_time_bin_count <- group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
+  count(time_bin) %>%
+  complete(time_bin)
+```
+
+- Replace the `NA` values with 0 and then use `cumsum` to calculate the cumulative total:
+
+```{r}
+completed_time_bin_count$n[is.na(completed_time_bin_count$n)] <- 0
+mutate(completed_time_bin_count, "cumsum" = cumsum(n))
+```
+
+This operation will be used later to prepare data for the visualisation libraries.
+
+# Highchart
+
+Highcharts barcharts are constructed by providing multiple instances of `hc_add_series` to `hc_chart` - as shown below:
+
+
+```{r}
+library(highcharter)
+highchart() %>%
+  hc_chart(type = "area") %>%
+  hc_xAxis(categories = levels(time_binned_stacked_area_data$time_bin)) %>%
+  hc_add_series(data = 11:17) %>%
+  hc_add_series(data = 21:15)
+```
+
+Unfortunately, the labels we previously added are too pretty for this chart - as it is necessary to store unique (informative) names inside of the data structure `time_binned_stacked_area_data` we are therefore forced to do some formatting on the factor levels before visualising the data:
+
+```{r}
+short_category_names <-
+  append(sapply(strsplit(
+    levels(time_binned_stacked_area_data$time_bin), ","
+  ), "[[", 1),
+  sapply(strsplit(
+    levels(time_binned_stacked_area_data$time_bin)[length(levels(time_binned_stacked_area_data$time_bin))], ","
+  ), "[[", 2))
+
+highchart() %>%
+  hc_chart(type = "area") %>%
+  hc_xAxis(categories = short_category_names) %>%
+  hc_add_series(data = 11:17) %>%
+  hc_add_series(data = 21:15)
+```
+
+
+A basic "area" `hc_chart` will not stack the areas, if we truly care about relative comparisons then this might be a more useful visualisation:
+
+```{r}
+highchart() %>%
+  hc_chart(type = "area") %>%
+  hc_xAxis(categories = short_category_names) %>%
+  hc_add_series(data = 11:17) %>%
+  hc_add_series(data = 21:15) %>%
+  hc_plotOptions(area = list(stacking = "normal"))
+```
+
+
+
+## Cumulative Stacked Area Chart
+
+The cumulative count operation from above must be passed to the `highchart` appropriately, above we defined the following steps, which generates long formatted data (i.e. there are a minimal number of columns)
+
+```{r}
+grouped_tally <- group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
+  count(time_bin) %>%
+  complete(time_bin)
+
+grouped_tally$n[is.na(grouped_tally$n)] <- 0
+grouped_tally <- mutate(grouped_tally, "cumsum" = cumsum(n))
+```
+
+Highchart requires a vector per series visualised, we therefore use `spread` from the `tidyr` library and prepare our data as a `data.frame` for use in highcharts:
+
+```{r}
+library(tidyr)
+library(zoo)
+grouped_cumsum <- grouped_tally %>%
+  spread(location, cumsum) %>%
+  as.data.frame()
+
+
+
+grouped_cumsum <- na.locf(grouped_cumsum)
+str(grouped_cumsum)
+```
+
+
+```{r}
+highchart() %>%
+  hc_chart(type = "area") %>%
+  hc_xAxis(categories = grouped_cumsum$time_bin) %>%
+  hc_add_series(data = grouped_cumsum$A) %>%
+  hc_add_series(data = grouped_cumsum$C) %>%
+  hc_plotOptions(area = list(stacking = "normal"))
+```
+
+
+
+
+## Programmatically Adding hc_add_series
+
+It is inconvenient to manually type out `hc_add_series` for each measure, and prone to error. It's therefore useful to be able to generate these programmatically. In order to achieve this we need to choose a method for constructing expressions, in other languages we might choose to do this using a `for` loop but it is slightly more comfortable to write this using `lapply`.
+
+The basic syntax is quite simple: the first argument is a vector (see [this tutorial](http://ox-it.github.io/Live-Data_Scripts-and-Templates/R-Scripts/lapply/) for further details)
+
+```{r}
+lapply(category_columns, function(x){
+  nchar(x)
+})
+```
+
+Assignments within the body of `function` are unique to that environment, in order to affect a global object it is necessary to use the `<<-`; we also use `invisible` to prevent `lapply` from printing it's output. For advanced users, this story isn't precisely accurate - consult the documentation for details.
+
+```{r}
+length_of_strings <- as.integer()
+invisible(lapply(category_columns, function(x){
+  length_of_strings <<- append(length_of_strings, nchar(x))
+}))
+length_of_strings
+```
+
+Using this pattern we can build our highchart for an arbitrary number of measures as follows:
+
+```{r}
+generated_chart <- highchart() %>%
+  hc_xAxis(categories = stacked_area_data[, categories_column],
+           title = categories_column)
+
+invisible(lapply(measure_columns, function(column) {
+  generated_chart <<-
+    hc_add_series(hc = generated_chart, name = column,
+                  data = stacked_bar_chart_df[, column])
+}))
+
+generated_chart %>%  hc_chart(type = "bar")
+```
+
+
+
+
+## OLD
+
+```{r}
+group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
+  select_("id", "start","time_bin", category_columns[1]) %>%
+  mutate(moved = match(time_bin, unique(time_bin))-1)
+```
+
+```{r}
+stacked_area_data
+```
+
+
+
+
+
+
+
+
+
+
+

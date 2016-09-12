@@ -29,7 +29,7 @@ library(htmltools)
 
 This tutorial demonstrates how to create interactive tables like the one below using the [DT](https://rstudio.github.io/DT/) and [rhandsontable](http://jrowen.github.io/rhandsontable/#introduction) libraries, like the one below (built using `DT`). Note that there are three interactive shiny apps associated with this tutorial:
 
-- [Comparison of `DT` and `rhandsontable`](https://livedataoxford.shinyapps.io/htmlwidget_template_datatables)
+- [Comparison of DT and rhandsontable](https://livedataoxford.shinyapps.io/htmlwidget_template_datatables)
 - [Server-side Pagination](htmlwidget_template_ServerSide-Datatable) 
 
 ```{r, echo = FALSE}

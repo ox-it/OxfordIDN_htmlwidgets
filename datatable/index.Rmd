@@ -55,7 +55,7 @@ These libraries are useful for visualising almost all rectangular datasets, with
 The data for this template is a .csv file accessed from Figshare [here](https://figshare.com/articles/Investigation_into_the_number_of_desktop_items_on_University_staff_computers_broken_down_by_department_and_operating_system_/3425729) using `read.csv`. 
 
 ```{r import_data}
-desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960", stringsAsFactors = F)
+desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960", stringsAsFactors = FALSE)
 knitr::kable(head(desktopItems))
 ```
 

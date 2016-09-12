@@ -69,7 +69,7 @@ knitr::kable(head(desktopItems))
 
 # DT
 
-The `DT` library binds to the extremely popular JavaScript library, <a href="datatables.net">datatables.net</a>. It is pretty much the defacto standard for interactive (responsive) tables, they have the added advantage of being able to paginate data in a variety of ways (including on a server-side engine). Any data.frame can be provided to datatables, and little effort must be put into pre-processing data ready for display in the table.
+The `DT` library binds to the extremely popular JavaScript library, <a href="http://datatables.net">datatables.net</a>. It is pretty much the defacto standard for interactive (responsive) tables, they have the added advantage of being able to paginate data in a variety of ways (including on a server-side engine). Any data.frame can be provided to datatables, and little effort must be put into pre-processing data ready for display in the table.
 
 This data.frame can now be provided to `datatable` from the `DT` library for display, but note the poor formatting of the timestamp
 
@@ -95,7 +95,7 @@ There are a number of utility functions for formatting columns:
 - formatRound
 - formatDate
 
-In the case of date, there are a number of different formats available, which are hidden in the symbol `DateMethods`, we will use `toUTCString` to format the data nicely.
+In the case of date, there are a number of different formats available, which are hidden in the symbol `DateMethods`, we will use `toUTCString` to format the data nicely. For further information about these formats, refer to JavaScript documentation, for instance the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"> MDN documentation</a>.
 
 ```{r}
 DT:::DateMethods

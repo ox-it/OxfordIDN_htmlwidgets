@@ -62,7 +62,7 @@ example_df <- data.frame(
   "Category 2" = c("X","Y","Y")
 )
 ## kable is loaded from the knitr library to convert the data.frame into a Markdown table for display purposes
-knitr::kable(example_df)
+knitr::kable(example_df, align = "c")
 ```
 
 Where the "measure" column contains numerical data which is categorised by a number of categories (or *dimensions*). There are therefore two interesting bar charts that can be generated:
@@ -131,11 +131,12 @@ highchart() %>%
 The `highcharter` library distinguishes between horizontal and vertically orientated bar charts by `hc_chart(type = )`; column and bar are verticle and horizontal, respectively. Both varieties of chart are more legible if bars are ordered from largest to smallest, note that internal to `hc_add_series` the ordered `measure_column` is reversed to achieve this:
 
 ```{r}
-aggregate_mean <- aggregate_mean[order(aggregate_mean$Desktop.Items),]
+aggregate_mean_sorted <-
+  aggregate_mean[order(aggregate_mean$Desktop.Items, decreasing = TRUE), ]
 highchart() %>%
   hc_chart(type = "bar") %>%
-  hc_xAxis(categories = aggregate_mean[,selected_dimension]) %>%
-  hc_add_series(name = format_label(selected_dimension), data = rev(aggregate_mean[,measure_column])) %>%
+  hc_xAxis(categories = aggregate_mean_sorted[,selected_dimension]) %>%
+  hc_add_series(name = format_label(selected_dimension), data = rev(aggregate_mean_sorted[,measure_column])) %>%
   hc_yAxis(title = list(text = "Mean Number of Desktop Items")) %>%
   hc_title(text = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
 ```
@@ -159,8 +160,7 @@ plot_ly(data = aggregate_mean,
 Barcharts are verticle by default in the plotly library, however horizontally orientated bar charts are often more appropriate where dimension labels are long. Independent of orientation, bar charts are more legible if bars are ordered from largest to smallest, as show below. Orientation is controlled in the `plotly` library through the argument `orientation`:
 
 ```{r}
-aggregate_mean <- aggregate_mean[order(aggregate_mean$Desktop.Items),]
-plot_ly(data = aggregate_mean,
+plot_ly(data = aggregate_mean[order(aggregate_mean$Desktop.Items, decreasing = TRUE), ],
         type = "bar",
         y = eval(as.name(selected_dimension)),
         x = eval(as.name(measure_column)),
@@ -245,9 +245,12 @@ intermediate_aggregate <- aggregate_data_for_barchart(
   data = desktopItems,
   dimension_column = "University",
   measure_column = "Desktop.Items",
-  aggregate_function = mean
+  aggregate_function = sum
 )
-knitr::kable(intermediate_aggregate)
+knitr::kable(head(intermediate_aggregate))
+```
+```{r}
+
 ```
 
 ## Plotly

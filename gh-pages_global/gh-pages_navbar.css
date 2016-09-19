@@ -1,4 +1,8 @@
-@media (max-width: 1000px) {
+.main-container {
+  padding-top: 50px;
+}
+
+@media (max-width: 960px) {
   .navbar-header {
       float: none;
   }

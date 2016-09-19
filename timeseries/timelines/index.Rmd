@@ -86,7 +86,8 @@ example_df <- data.frame(
   "Timeline Tooltip Info" = c("Label 1", "Label 2", "Label 2"),
   "Event Category" = c("X","X","Y")
 )
-DT::datatable(example_df)
+## kable is loaded from the knitr library to convert the data.frame into a Markdown table for display purposes
+knitr::kable(example_df)
 ```
 
 Where the "Start Date" and "End Date" column contain the start and end dates for the events, which must be formatted as YYYY-MM-DD. If your dates are not formatted like this, then refer to the "Date Manipulations Script" provided separartely. The "Timeline Label" and "Timeline Tooltip Info" columns provide information about how the events should be labelled in the timeline and what should be shown in the tooltip, respectively. Finally, the "Event Category" column is used for colour coding events.

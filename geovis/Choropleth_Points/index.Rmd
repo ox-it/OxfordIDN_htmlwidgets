@@ -100,6 +100,7 @@ example <- structure(list(longitude = c(-104.990251, -104.990251, 13.960129,
 13.960129, 13.960129), latitude = c(39.739236, 39.739236, 50.97178, 
 50.97178, 50.97178)), .Names = c("longitude", "latitude"), row.names = c(NA, 
 5L), class = "data.frame")
+## kable is loaded from the knitr library to convert the data.frame into a Markdown table for display purposes
 knitr::kable(example)
 ```
 

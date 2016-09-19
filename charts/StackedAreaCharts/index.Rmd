@@ -44,7 +44,7 @@ example_df <- data.frame(
   "Category 1" = c("A","B","B"),
   "Category 2" = c("X","Y","Z")
 )
-## Use kable from the knitr library to display the data.frame prettily
+## kable is loaded from the knitr library to convert the data.frame into a Markdown table for display purposes
 knitr::kable(example_df)
 ```
 

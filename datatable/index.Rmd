@@ -56,6 +56,7 @@ The data for this template is a .csv file accessed from Figshare [here](https://
 
 ```{r import_data}
 desktopItems <- read.csv(file = "https://ndownloader.figshare.com/files/5360960", stringsAsFactors = FALSE)
+## kable is loaded from the knitr library to convert the first few lines of the datafile into a Markdown table for display purposes
 knitr::kable(head(desktopItems))
 ```
 

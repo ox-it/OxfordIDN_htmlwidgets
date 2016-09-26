@@ -63,7 +63,7 @@ The code below generates an interactive scatterplot using the `plotly.js` librar
 
 ```{r}
 library(plotly)
-library(gapminder)
+library(gapminder) ## 
 plot_ly(data = gapminder,
         x = gapminder$year,
         y = gapminder$lifeExp,
@@ -96,7 +96,7 @@ A diverse (but not complete) comparison of the chart types and htmlwidget librar
 
 # htmlwidgets and Future Proofing Visualisation
 
-As htmlwidgets are dependent on visualisation JavaScript libraries that are themselves dependent on (often) multiple other libraries and/or frameworks the long term viabiity of a htmlwidget visualisation must be considered. These tutorials mostly consider the utilisation of htmlwidgets within RMarkdown documents but there are also multiple examples of the visualisations being used in Shiny apps, different advice is relevant to the two different technologies.
+As htmlwidgets are dependent on visualisation JavaScript libraries that are themselves dependent on (often) multiple other libraries and/or frameworks, the long term viabiity of a htmlwidget visualisation must be considered. These tutorials mostly consider the utilisation of htmlwidgets within RMarkdown documents but there are also multiple examples of the visualisations being used in Shiny apps, different advice is relevant to the two different technologies.
 
 ## RMarkdown and HTML
 
@@ -106,9 +106,7 @@ When an RMarkdown file is knitted together to output a HTML document, all requis
 <script src="data:application/x-javascript;base64,compressedJavaScript="></script
 ```
 
-This is relatively future-proof, in that no external CDN is needed to load the JavaScript for your visualisations - instead the JS is in your .html file. However, as browsers and web-enabled form factors improve there may be new features or breaking changes that means the JS embedded into your pages does not behave as well as it *should* do as it has stagnated.
-
-XXX: How to get the RMarkdown document to generate itself such that the compressed javascript is optionally called?
+This is relatively future-proof, in that no external CDN is needed to load the JavaScript for your visualisations - instead the JS is in your .html file. However, as browsers and web-enabled form factors improve there may be new features or breaking changes that means the visualisations embedded into your pages do not behave as well as expected. 
 
 ## Shiny Apps
 

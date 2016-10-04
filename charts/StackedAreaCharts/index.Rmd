@@ -62,7 +62,8 @@ stacked_area_data <- data.frame(
   "start" = c(-1000, -500, 10, 100, -1000, -500, 10, 100, -900, -100),
   "end" = c(-950, -450, 60, 150, -980, -420, 40, 120, -830, -50),
   "location" = c(rep("A",4), rep("B",4), rep("C",2)),
-  "type" = c(rep("open", 5), rep("closed", 5))
+  "type" = c(rep("open", 5), rep("closed", 5)),
+  stringsAsFactors = F
 )
 ```
 
@@ -89,17 +90,17 @@ Note that we create a new variable to store this modified data.frame
 
 ```{r}
 time_binned_stacked_area_data <- stacked_area_data
-time_binned_stacked_area_data$time_bin <- cut(stacked_area_data[,start_column], 
-                                  pretty_event_breaks, right = FALSE, dig.lab = 4)
+time_binned_stacked_area_data$time.bin <- as.character(cut(stacked_area_data[,start_column], 
+                                  pretty_event_breaks, right = FALSE, dig.lab = 4))
 time_binned_stacked_area_data
 ```
 
 The levels of the `time_bin` are fairly ugly and will not look attractive in our visualisation, some beautification is easy to add using `gsub`:
 
 ```{r}
-pretty_bin_labels <- gsub("[[]|[)]","",levels(time_binned_stacked_area_data$time_bin))
+pretty_bin_labels <- gsub("[[]|[)]","",time_binned_stacked_area_data$time.bin)
 # pretty_bin_labels <- gsub(","," to ",pretty_bin_labels)
-levels(time_binned_stacked_area_data$time_bin) <- pretty_bin_labels
+time_binned_stacked_area_data$time.bin <- pretty_bin_labels
 time_binned_stacked_area_data
 ```
 
@@ -112,13 +113,13 @@ add_pretty_time_bin <- function(data = NA){
   
   pretty_event_breaks <- pretty(time_binned_df[,start_column])
   
-  time_bin_factor <- cut(time_binned_df[,start_column], 
-                                  pretty_event_breaks, right = FALSE, dig.lab = 4)
+  time_bin_factor <- as.character(cut(time_binned_df[,start_column], 
+                                  pretty_event_breaks, right = FALSE, dig.lab = 4))
   
-  time_bin_labels <- gsub("[[]|[)]","",levels(time_bin_factor))
-  levels(time_bin_factor) <- time_bin_labels
+  time_bin_labels <- gsub("[[]|[)]","",time_bin_factor)
+  time_bin_factor <- time_bin_labels
   
-  time_binned_df$time_bin <- time_bin_factor
+  time_binned_df$time.bin <- time_bin_factor
   
   time_binned_df
 }
@@ -136,8 +137,28 @@ We need to calculate the cumulative counts against across both the `time_bin` an
 
 ```{r}
 library(dplyr)
+
+tibble_data <- tbl_df(time_binned_stacked_area_data)
+
+tibble_data %>% select
+
+select(iris, starts_with("Petal"))
+
+
+names(time_binned_stacked_area_data)
+
+
+tbl_df(time_binned_stacked_area_data) %>% count(location)
+
+count(time_binned_stacked_area_data, time.bin)
+
+ tbl_df(Batting) %>%  batting_tbl %>% count(playerID)
+
+group_by_(time_binned_stacked_area_data, category_columns[1]) %>% select(type)
+
+
 group_by_(time_binned_stacked_area_data, category_columns[1]) %>%
-  count(time_bin)
+  count(type)
 ```
 
 - Use `complete` from the `tidyr` library to ensure that empty factors are not ignored

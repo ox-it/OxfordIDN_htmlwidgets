@@ -120,7 +120,7 @@ The shapefiles are imported using `readOGR` from the `rgdal` library; specifying
 
 ```{r}
 library(rgdal)
-full_us_shapefiles <- readOGR(dsn = "data/shapefiles/", layer = "cb_2015_us_state_500k", verbose = F)
+full_us_shapefiles <- readOGR(dsn = "data/shapefiles", layer = "cb_2015_us_state_500k", verbose = F)
 library(leaflet)
 leaflet(data = full_us_shapefiles) %>% addTiles() %>% 
   addPolygons(

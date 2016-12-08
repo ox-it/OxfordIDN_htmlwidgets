@@ -1,0 +1,28 @@
+---
+title: "Visualisation Comparisons: How do I choose?"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: ../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../gh-pages_global/_navbar.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+# Useful resources
+
+https://github.com/ft-interactive/chart-doctor
+https://www.ft.com/content/304419ec-63a3-11e6-8310-ecf0bddad227
+https://github.com/ft-interactive/visual-vocabulary

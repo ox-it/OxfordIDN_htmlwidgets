@@ -148,10 +148,13 @@ The `data.frame` can now be visualised using `Plotly` as follows, note that `eva
 
 ```{r}
 library(plotly)
+
+as.formula(paste0("~",selected_dimension))
+
 plot_ly(data = aggregate_mean,
         type = "bar",
-        x = eval(as.name(selected_dimension)),
-        y = eval(as.name(measure_column))) %>%
+        x = as.formula(paste0("~",selected_dimension)),
+        y = as.formula(paste0("~",measure_column))) %>%
   layout(xaxis = list(title = format_label(selected_dimension)),
          yaxis = list(title = "Mean Number of Desktop Items"),
          title = paste0("Mean number of desktop items aggregated by ",format_label(selected_dimension)))
@@ -162,8 +165,8 @@ Barcharts are verticle by default in the plotly library, however horizontally or
 ```{r}
 plot_ly(data = aggregate_mean[order(aggregate_mean$Desktop.Items, decreasing = TRUE), ],
         type = "bar",
-        y = eval(as.name(selected_dimension)),
-        x = eval(as.name(measure_column)),
+        y = as.formula(paste0("~",selected_dimension)),
+        x = as.formula(paste0("~",measure_column)),
         orientation = "h") %>%
   layout(xaxis = list(title = "Mean Number of Desktop Items"),
          yaxis = list(title = format_label(selected_dimension)),
@@ -204,8 +207,8 @@ Using the same code as above, a barchart of the aggregated data can easily be ge
 aggregate_number_of_observations <- aggregate_number_of_observations[order(aggregate_number_of_observations$Desktop.Items),]
 plot_ly(data = aggregate_number_of_observations,
         type = "bar",
-        y = eval(as.name(selected_dimension)),
-        x = eval(as.name(measure_column)),
+        y = as.formula(paste0("~",selected_dimension)),
+        x = as.formula(paste0("~",measure_column)),
         orientation = "h") %>%
   layout(xaxis = list(title = "Number of respondants"),
          yaxis = list(title= format_label(selected_dimension)),
@@ -269,8 +272,8 @@ plotly_aggregated_barchart <- function(
   plot_ly(
     data = data,
     type = "bar",
-    y = eval(as.name(dimension_column)),
-    x = Desktop.Items,
+    y = as.formula(paste0("~",dimension_column)),
+    x = ~Desktop.Items,
     orientation = "h"
   ) %>%
     layout(

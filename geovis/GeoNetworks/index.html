@@ -50,19 +50,19 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Comparisons <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="/OxfordIDN_htmlwidgets/library-comparisons">Library Comparison</a></li>
-            <li><a href="/OxfordIDN_htmlwidgets/visualisation-comparisons">Visualisation Selection Advice</a></li>
+            <li><a href="/library-comparisons">Library Comparison</a></li>
+            <li><a href="/visualisation-comparisons">Visualisation Selection Advice</a></li>
           </ul>
         </li>
         
                 <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Charts<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="/OxfordIDN_htmlwidgets/charts">Charts Overview</a></li>
+            <li><a href="/charts">Charts Overview</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="/OxfordIDN_htmlwidgets/charts/BarCharts">BarCharts</a></li>
-            <li><a href="OxfordIDN_htmlwidgets/charts/StackedBarCharts">Stacked BarCharts</a></li>
-            <li><a href="OxfordIDN_htmlwidgets/charts/StackedAreaCharts">Stacked Area Charts</a></li>
+            <li><a href="/charts/BarCharts">BarCharts</a></li>
+            <li><a href="/OxfordIDN_htmlwidgets/charts/StackedBarCharts">Stacked BarCharts</a></li>
+            <li><a href="/OxfordIDN_htmlwidgets/charts/StackedAreaCharts">Stacked Area Charts</a></li>
           </ul>
         </li>
         
@@ -360,8 +360,8 @@ edge_label &lt;- function(weight){
 library(leaflet)
 leaflet(vert) %&gt;% addTiles() %&gt;% addMarkers(data = vert, popup = ~location_label(name)) %&gt;%
   addPolylines(data = edges, weight = 5 * df$width, popup = edge_label(df$width))</code></pre>
-<div id="htmlwidget-398387734c2d7f0b82dd" style="width:672px;height:480px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-398387734c2d7f0b82dd">{"x":{"calls":[{"method":"addTiles","args":["http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap\u003c/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA\u003c/a>"}]},{"method":"addMarkers","args":[[45.75,43.604652,48.856614,43.296482],[-4.85,1.444209,2.352222,5.36978],null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["City: Lyon","City: Toulouse","City: Paris","City: Marseille"],null,null]},{"method":"addPolylines","args":[[[{"lng":[-4.85,2.352222],"lat":[45.75,48.856614]}],[{"lng":[1.444209,2.352222],"lat":[43.604652,48.856614]}],[{"lng":[2.352222,5.36978],"lat":[48.856614,43.296482]}],[{"lng":[1.444209,5.36978],"lat":[43.604652,43.296482]}]],null,null,{"lineCap":null,"lineJoin":null,"clickable":true,"pointerEvents":null,"className":"","stroke":true,"color":"#03F","weight":[5,10,15,20],"opacity":0.5,"fill":false,"fillColor":"#03F","fillOpacity":0.2,"dashArray":null,"smoothFactor":1,"noClip":false},["Weighting: 1","Weighting: 2","Weighting: 3","Weighting: 4"]]}],"limits":{"lat":[43.296482,48.856614],"lng":[-4.85,5.36978]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-8fdcc96ec847c3839de2" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8fdcc96ec847c3839de2">{"x":{"calls":[{"method":"addTiles","args":["http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap\u003c/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA\u003c/a>"}]},{"method":"addMarkers","args":[[45.75,43.604652,48.856614,43.296482],[-4.85,1.444209,2.352222,5.36978],null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["City: Lyon","City: Toulouse","City: Paris","City: Marseille"],null,null]},{"method":"addPolylines","args":[[[{"lng":[-4.85,2.352222],"lat":[45.75,48.856614]}],[{"lng":[1.444209,2.352222],"lat":[43.604652,48.856614]}],[{"lng":[2.352222,5.36978],"lat":[48.856614,43.296482]}],[{"lng":[1.444209,5.36978],"lat":[43.604652,43.296482]}]],null,null,{"lineCap":null,"lineJoin":null,"clickable":true,"pointerEvents":null,"className":"","stroke":true,"color":"#03F","weight":[5,10,15,20],"opacity":0.5,"fill":false,"fillColor":"#03F","fillOpacity":0.2,"dashArray":null,"smoothFactor":1,"noClip":false},["Weighting: 1","Weighting: 2","Weighting: 3","Weighting: 4"]]}],"limits":{"lat":[43.296482,48.856614],"lng":[-4.85,5.36978]}},"evals":[],"jsHooks":[]}</script>
 </div>
 
 

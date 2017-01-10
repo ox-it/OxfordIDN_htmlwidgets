@@ -93,6 +93,7 @@ These columns will be used in the BarCharts to decide what dimensions of the dat
 # Mean Parameter per Category
 
 Using the `aggregate` function the mean number of desktop items per category can easily be calculated, the chosen category for aggregation will be assigned to `selected_dimension`. The function `as.name` is necessary to convert strings into valid column names.
+The first 'eval' computes the mean of the measure column values. The second 'evel' computes the value of the selected column.
 
 ```{r mean_aggregate}
 selected_dimension <- categories[1]

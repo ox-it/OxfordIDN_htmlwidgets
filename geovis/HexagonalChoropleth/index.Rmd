@@ -1,0 +1,107 @@
+---
+title: "htmlwidget Choropleth from Shapefiles and Points"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: ../../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../../gh-pages_global/_navbar.html
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/geovis/Choropleth_Points" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+Note that these examples currently (December 2016) rely on the development version of leaflet `devtools::install_github("rstudio/leaflet")` and are taken from http://rpubs.com/bhaskarvk/tilegramsR
+
+# Basic example
+
+```{r}
+library(tilegramsR)
+## NPR1to1 A 'SpatialPolygonsDataFrame' where each polygon represents a state
+states <- NPR1to1@data$state
+library(colormap)
+factpal <- colorFactor(colormap::colormap(
+  nshades = length(states)), states)
+```
+
+
+## NPR
+
+This version is more representative than geographic:
+
+```{r}
+library(leaflet) # devtools::install_github("rstudio/leaflet")
+leaflet(
+  NPR1to1,
+  options=leafletOptions(
+    crs = leafletCRS("L.CRS.Simple"),
+    minZoom = -1.5, maxZoom = -1.5,
+    dragging = FALSE, zoomControl = FALSE,
+    attributionControl = FALSE)
+  ) %>%
+  addPolygons(
+    weight=2,color='#000000', group = 'states',
+    fillOpacity = 0.6, opacity = 1, fillColor= ~factpal(state),
+    highlightOptions = highlightOptions(weight = 4)
+    ) %>%
+  addLabelOnlyMarkers(
+    data=NPR1to1.centers,
+    label = ~as.character(state),
+    labelOptions = labelOptions(
+    noHide = 'T', textOnly = T,
+    offset=c(-4,-10), textsize = '12px')
+    )
+```
+
+## 538.com
+
+```{r}
+states <- FiveThirtyEightElectoralCollege.states@data$state
+factpal <- colorFactor(colormap::colormap(
+  nshades = length(states)), states)
+```
+
+```{r}
+leaflet(
+  options=leafletOptions(
+    crs = leafletCRS("L.CRS.Simple"),
+    minZoom = -1.5, maxZoom = -1.5,
+    dragging = FALSE, zoomControl = FALSE,
+    attributionControl = FALSE)) %>%
+  addPolygons(
+    data=FiveThirtyEightElectoralCollege,
+    weight=1,color='#000000', fillOpacity = 0.5, opacity=0.2,
+    fillColor= ~factpal(state)) %>%
+  addPolygons(
+    data=FiveThirtyEightElectoralCollege.states, group = 'states',
+    weight=2,color='#000000',
+    fill = T, opacity = 1, fillOpacity = 0,
+    highlightOptions = highlightOptions(weight = 4)) %>%
+  addLabelOnlyMarkers(
+    data=FiveThirtyEightElectoralCollege.centers,
+    label = ~as.character(state),
+    labelOptions = labelOptions(
+      noHide = 'T', textOnly = T,
+      offset=c(-8,-20), textsize = '15px'))
+```
+
+
+
+# Other examples
+
+http://rpubs.com/bhaskarvk/tilegramsR

@@ -1,0 +1,109 @@
+---
+title: "htmlwidget Geovis Data"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: ../../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../../gh-pages_global/_navbar.html
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/geovis/geovis-data" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+Geographic visualisations require mapping data before you can even begin to overlay your own data, it's almost never appropriate to trust in a bitmap image of the Earth and drop points on it. Good geographic visualisations require vector graphics with land mass outlines, often oceonagraphic detail and almost always country boundaries; there are then important considerations about colour palettes if vegetation or human settlement density are important for your visualisations.
+
+Knowing where to obtain these datasets from is a complex problem to solve, particularly if you're interested in historical geopolitical boundaries. This page attempts to provide a broad overview of some good repositories of geographic data for use in geographic htmlwidget visualisations.
+
+# Technical considerations: projections and more
+
+Projections are complicated [vox.com video](vox.com)
+
+## Modifying Projections
+
+## Longitude and Latitude <-> Eastings and Northings
+
+# Geographic-friendly datastructure in R
+
+There are a number of data structures in R that are specifically tailored to storing and performing computations on spatial data, and are therefore incredibly useful when working with geographic visualisations. The most common of these datastructures are provided by the `sp` library or else you may find yourself using GEOjson.
+
+## Spatial data with library(sp)
+
+The `sp` library is part of a coordinated attempt to build a consistent set of tools and objects for working with spatial datasets across a variety of packages within the R universe and also in external GIS tools, furthermore the most widely used functions for importing spatial data will coerce them into one of the following `Spatial*` objects:
+
+
+```{r}
+library(sp)
+sp_objects <- ls("package:sp")
+sp_objects[grepl("^Spatial..", sp_objects)]
+```
+
+Because in the R universe data is primarily imported directly into a `Spatial*` object there is little need to know how to construct these from scratch. However, there are many important facets of these objects you need to know about in order to add/remove/explain features within your data - these are covered later in this section.
+
+## GeoJSON
+
+GeoJSON is a web-standard for encoding spatial data, and covers the same range of objects as `library(sp)` but guarantees consistency with a broad range of tools outside of the R verse. The standard structure of a GeoJSON object is as follows:
+
+```{JSON}
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [125.6, 10.1]
+  },
+  "properties": {
+    "name": "Dinagat Islands"
+  }
+}
+```
+
+See http://gis.stackexchange.com/a/54024/78822 and 
+
+... note that highcharter has converted many of the naturalearthdata.com maps into GeoJSON for convenience.
+
+```{r}
+library(highcharter)
+data(worldgeojson)
+class(worldgeojson)
+```
+
+As 
+
+## SpatialPolygonsDataFrame
+
+## SpatialPoints
+
+# Base Maps
+
+Base maps provide basic maps 
+
+## GeoJSON
+
+```{r}
+library(highcharter)
+data(worldgeojson)
+
+
+```
+
+
+# Country Borders
+
+# Oceanagraphic Details
+
+# Roads and sociopolitical features

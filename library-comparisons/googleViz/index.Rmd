@@ -1,0 +1,120 @@
+---
+title: "googleViz Library"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: ../../gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: ../../gh-pages_global/_navbar.html
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/geovis/Geolines" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+The googleViz library is different from most other htmlwidget libraries, as it typically requires ***all*** options and layouts to be set in the initial visualisation call - i.e. it is not possible to do the following:
+
+```{r}
+## Do not run!
+my_nice_googleViz <- gvisCalendar(Cairo, datevar="Date", numvar="Temp")
+my_nice_googleViz %>%
+  gvis_update(title="Daily temperature in Cairo") %>% # gvis_update function does NOT exist
+  plot()
+```
+
+Instead, it is necessary to specify all chart options as a list and provide this to your selected `gvis*` function:
+
+```{r}
+library(dplyr)
+my_nice_options <- list(title = "Daily temperature in Cairo")
+
+gvisCalendar(Cairo,
+             datevar = "Date",
+             numvar = "Temp",
+             options = my_nice_options) %>%
+  plot()
+```
+
+# HTML
+
+It is possible to add custom tooltips to charts, however the methodology is dependent on `colnames` so be careful.
+
+```{r}
+df <- data.frame(year=1:11,pop=1:11,
+                 pop.html.tooltip=letters[1:11])
+levels(df$pop.html.tooltip)[1] <- 
+  '<a href="http://www.r-project.com"><img src="http://www.r-project.org/Rlogo.jpg" alt="R logo" /></a>'
+df
+
+plot( 
+  gvisScatterChart(df,
+                   options=list(tooltip="{isHtml:'true'}"))
+)
+```
+
+## Doesn't work for all
+
+This method does NOT work where the default tooltip contains more than one piece information - i.e. the value of both axes simulataneously. Here are two examples taken from [https://cran.r-project.org/web/packages/googleVis/vignettes/Using_Roles_via_googleVis.html](https://cran.r-project.org/web/packages/googleVis/vignettes/Using_Roles_via_googleVis.html)
+
+```{r}
+dat <- data.frame(Year=2010:2013,
+                  Sales=c(600, 1500, 800, 1000),
+                  Sales.tooltip=c('$600K in our first year!',
+                                       'Sunspot activity made this our best year ever!',
+                                       '$800K in 2012.',
+                                       '$1M in sales last year.'),
+                  Sales.certainty=c(TRUE, FALSE, TRUE, FALSE))
+plot(
+  gvisColumnChart(dat, xvar='Year', 
+                  yvar=c('Sales', 'Sales.certainty'),
+                  options = list(tooltip="{isHtml:'true'}")
+  )
+)
+```
+
+
+
+```{r}
+factor_string_cairo <- Cairo %>%
+  rename(date = Date, pop = Temp) %>%
+  mutate(pop.html.tooltip = as.factor(sample(c("dogs","cats","flying squirrels"), row(Cairo))))
+class(factor_string_cairo)
+
+string_cairo <- Cairo %>%
+  rename(date = Date, pop = Temp) %>%
+  mutate(pop.html.tooltip = sample(c("dogs","cats","flying squirrels"), row(Cairo)))
+class(string_cairo)
+
+number_cairo <- Cairo %>%
+  rename(date = Date, pop = Temp) %>%
+  mutate(pop.html.tooltip = sample(1:3, row(Cairo)))
+class(number_cairo)
+
+html_cairo <- Cairo %>%
+  rename(date = Date, pop = Temp) %>%
+  mutate(pop.html.tooltip = rep("'<div><strong>2010</strong><br>Date: <strong>00/00/0000</strong><br>Sales: <strong>$600</strong></div>', 600,'<div><strong>2010</strong><br>Date: <strong>00/00/0000</strong><br>Expense: <strong>$600</strong></div>'", nrow(Cairo)))
+str(html_cairo)
+
+
+plot(gvisCalendar(
+  html_cairo,
+   options=list(tooltip="{isHtml:'true'}",
+                trigger = 'both',
+                focusTarget = 'category')
+))
+```
+

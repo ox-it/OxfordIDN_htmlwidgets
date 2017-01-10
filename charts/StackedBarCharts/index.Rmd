@@ -27,7 +27,11 @@ library(htmltools)
 </a>
 
 
-This tutorial demonstrates how to create interactive stacked barcharts like the one below using a variety of different libraries, currently limited to; highchart.
+This tutorial demonstrates how to create interactive stacked barcharts like these
+
+<iframe src="https://livedataoxford.shinyapps.io/htmlwidget_template_stacked_bar_chart/?allowPopout=TRUE" width="100%" height="500px"/> 
+
+
 
 ```{r, echo=FALSE}
 library(highcharter)

@@ -16,18 +16,19 @@ output:
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
-	warning = FALSE
+	warning = FALSE,
+	eval = F
 )
 library(htmltools)
 ```
 
 
 
-<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets" target="blank">  
-<img style="position: absolute; top: 0; right: 0; border: 0;",
-             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
-             alt="Fork me on GitHub"/>
-</a>
+<!-- <a href="https://github.com/ox-it/OxfordIDN_htmlwidgets" target="blank">   -->
+<!-- <img style="position: absolute; top: 0; right: 0; border: 0;", -->
+<!--              src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png", -->
+<!--              alt="Fork me on GitHub"/> -->
+<!-- </a> -->
 
 The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is documented at http://ox-it.github.io/OxfordIDN_htmlwidgets/charts/BarCharts.
 

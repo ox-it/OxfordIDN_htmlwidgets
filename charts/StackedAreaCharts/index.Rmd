@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 library(htmltools)
 ```
 
-<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/charts/StackedAreaCharts" target="blank">  
+<a href="https://github.com/martinjhnhadley/OxfordIDN_htmlwidgets/tree/gh-pages/charts/StackedAreaCharts" target="blank">  
 <img style="position: absolute; top: 0; right: 0; border: 0;",
              src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
              alt="Fork me on GitHub"/>
@@ -270,7 +270,7 @@ highchart() %>%
 
 It is inconvenient to manually type out `hc_add_series` for each measure, and prone to error. It's therefore useful to be able to generate these programmatically. In order to achieve this we need to choose a method for constructing expressions, in other languages we might choose to do this using a `for` loop but it is slightly more comfortable to write this using `lapply`.
 
-The basic syntax is quite simple: the first argument is a vector (see [this tutorial](http://ox-it.github.io/Live-Data_Scripts-and-Templates/R-Scripts/lapply/) for further details)
+The basic syntax is quite simple: the first argument is a vector (see [this tutorial](http://martinjhnhadley.github.io/Live-Data_Scripts-and-Templates/R-Scripts/lapply/) for further details)
 
 ```{r}
 lapply(category_columns, function(x){

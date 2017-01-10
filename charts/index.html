@@ -61,12 +61,27 @@
           </ul>
         </li>
         
+        
         <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Geoviz (Maps)<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="/OxfordIDN_htmlwidgets/geovis">Geoviz Overview</a></li>
-            <li role="separator" class="divider"></li>
+            
+            <!--- Using https://php.quicoto.com/bootstrap-3-second-level-menu-nav/ !-->
+            <li class="dropdown-submenu">
+			        <a tabindex="-1" href="#">Geoviz Data<span class="caret"></span></a>
+			        <ul class="dropdown-menu">
+			          <li><a tabindex="-1" href="#">Projections and technical details</a></li>			                  
+			          <li><a href="#">Geographic Datastructures</a></li>
+			          <li><a href="#">Country Borders</a></li>
+			        </ul>
+			    </li>	
+			    
+			    <li role="separator" class="divider"></li>
+            
+            
             <li><a href="/OxfordIDN_htmlwidgets/geovis/Scattergeo">Points on a map</a></li>
+            <li><a href="/OxfordIDN_htmlwidgets/geovis/Geolines">Geolines (great circles)</a></li>
             <li><a href="/OxfordIDN_htmlwidgets/geovis/Choropleth_Points">Choropleth (shaded regions) from points</a></li>
             <li><a href="/OxfordIDN_htmlwidgets/geovis/Choropleth_Polygons">Choropleth (shaded regions) from polygon</a></li>
             <li><a href="/OxfordIDN_htmlwidgets/geovis/GeoNetworks">Networks overlaid on maps</a></li>
@@ -152,7 +167,7 @@ h6 {
 }
 </style>
 
-<link href="data:text/css;charset=utf-8,%2Emain%2Dcontainer%20%7B%0Apadding%2Dtop%3A%2050px%3B%0A%7D%0A%40media%20%28max%2Dwidth%3A%20960px%29%20%7B%0A%2Enavbar%2Dheader%20%7B%0Afloat%3A%20none%3B%0A%7D%0A%2Enavbar%2Dleft%2C%2Enavbar%2Dright%20%7B%0Afloat%3A%20none%20%21important%3B%0A%7D%0A%2Enavbar%2Dtoggle%20%7B%0Adisplay%3A%20block%3B%0A%7D%0A%2Enavbar%2Dcollapse%20%7B%0Aborder%2Dtop%3A%201px%20solid%20transparent%3B%0Abox%2Dshadow%3A%20inset%200%201px%200%20rgba%28255%2C255%2C255%2C0%2E1%29%3B%0A%7D%0A%2Enavbar%2Dfixed%2Dtop%20%7B%0Atop%3A%200%3B%0Aborder%2Dwidth%3A%200%200%201px%3B%0A%7D%0A%2Enavbar%2Dcollapse%2Ecollapse%20%7B%0Adisplay%3A%20none%21important%3B%0A%7D%0A%2Enavbar%2Dnav%20%7B%0Afloat%3A%20none%21important%3B%0Amargin%2Dtop%3A%207%2E5px%3B%0A%7D%0A%2Enavbar%2Dnav%3Eli%20%7B%0Afloat%3A%20none%3B%0A%7D%0A%2Enavbar%2Dnav%3Eli%3Ea%20%7B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%2010px%3B%0A%7D%0A%2Ecollapse%2Ein%7B%0Adisplay%3Ablock%20%21important%3B%0A%7D%0A%7D" rel="stylesheet" type="text/css" />
+<link href="data:text/css;charset=utf-8,%2Emain%2Dcontainer%20%7B%0Apadding%2Dtop%3A%2050px%3B%0A%7D%0A%40media%20%28max%2Dwidth%3A%20960px%29%20%7B%0A%2Enavbar%2Dheader%20%7B%0Afloat%3A%20none%3B%0A%7D%0A%2Enavbar%2Dleft%2C%2Enavbar%2Dright%20%7B%0Afloat%3A%20none%20%21important%3B%0A%7D%0A%2Enavbar%2Dtoggle%20%7B%0Adisplay%3A%20block%3B%0A%7D%0A%2Enavbar%2Dcollapse%20%7B%0Aborder%2Dtop%3A%201px%20solid%20transparent%3B%0Abox%2Dshadow%3A%20inset%200%201px%200%20rgba%28255%2C255%2C255%2C0%2E1%29%3B%0A%7D%0A%2Enavbar%2Dfixed%2Dtop%20%7B%0Atop%3A%200%3B%0Aborder%2Dwidth%3A%200%200%201px%3B%0A%7D%0A%2Enavbar%2Dcollapse%2Ecollapse%20%7B%0Adisplay%3A%20none%21important%3B%0A%7D%0A%2Enavbar%2Dnav%20%7B%0Afloat%3A%20none%21important%3B%0Amargin%2Dtop%3A%207%2E5px%3B%0A%7D%0A%2Enavbar%2Dnav%3Eli%20%7B%0Afloat%3A%20none%3B%0A%7D%0A%2Enavbar%2Dnav%3Eli%3Ea%20%7B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%2010px%3B%0A%7D%0A%2Ecollapse%2Ein%7B%0Adisplay%3Ablock%20%21important%3B%0A%7D%0A%7D%0A%2Edropdown%2Dsubmenu%20%7B%0Aposition%3A%20relative%3B%0A%7D%0A%2Edropdown%2Dsubmenu%20%3E%20%2Edropdown%2Dmenu%20%7B%0Atop%3A%200%3B%0Aleft%3A%20100%25%3B%0Amargin%2Dtop%3A%20%2D6px%3B%0Amargin%2Dleft%3A%20%2D1px%3B%0A%7D%0A%2Edropdown%2Dsubmenu%3Ahover%20%3E%20%2Edropdown%2Dmenu%20%7B%0Adisplay%3A%20block%3B%0A%7D%0A%2Edropdown%2Dsubmenu%3Ahover%20%3E%20a%3Aafter%20%7B%0Aborder%2Dleft%2Dcolor%3A%20%23fff%3B%0A%7D%0A%2Edropdown%2Dsubmenu%2Epull%2Dleft%20%7B%0Afloat%3A%20none%3B%0A%7D%0A%2Edropdown%2Dsubmenu%2Epull%2Dleft%20%3E%20%2Edropdown%2Dmenu%20%7B%0Aleft%3A%20%2D100%25%3B%0Amargin%2Dleft%3A%2010px%3B%0A%7D%0A" rel="stylesheet" type="text/css" />
 
 </head>
 

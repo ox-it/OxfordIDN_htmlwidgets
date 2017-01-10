@@ -2,9 +2,9 @@
 This Shiny app displays an interactive datatable using one of two libraries: <a href=https://rstudio.github.io/DT>DT</a> and <a href=http://jrowen.github.io/rhandsontable/#introduction>rhandsontables</a> of the following Figshare <a href="https://figshare.com/articles/Investigation_into_the_number_of_desktop_items_on_University_staff_computers_broken_down_by_department_and_operating_system_/3425729">dataset</a>.</p>
 
 <p>
-Both the `DT` and `rhandsontable` library provide a wide range of functionality natively, without Shiny - see <a href=http://ox-it.github.io/OxfordIDN_htmlwidgets/datatable>http://ox-it.github.io/OxfordIDN_htmlwidgets/datatable</a> for more details. This template relies on Shiny for minimal interactivity, but note that significantly more interactivity is possible.</p>
+Both the `DT` and `rhandsontable` library provide a wide range of functionality natively, without Shiny - see <a href=http://martinjhnhadley.github.io/OxfordIDN_htmlwidgets/datatable>http://martinjhnhadley.github.io/OxfordIDN_htmlwidgets/datatable</a> for more details. This template relies on Shiny for minimal interactivity, but note that significantly more interactivity is possible.</p>
 
 - Switching between libraries
 - Displaying the selected row in the dataset
 
-<p>The code for this shiny app is available on <a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/datatable">GitHub</a></p>
+<p>The code for this shiny app is available on <a href="https://github.com/martinjhnhadley/OxfordIDN_htmlwidgets/tree/gh-pages/datatable">GitHub</a></p>

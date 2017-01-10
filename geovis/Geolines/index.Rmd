@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 library(htmltools)
 ```
 
-<a href="https://github.com/ox-it/OxfordIDN_htmlwidgets/tree/gh-pages/geovis/Geolines" target="blank">  
+<a href="https://github.com/martinjhnhadley/OxfordIDN_htmlwidgets/tree/gh-pages/geovis/Geolines" target="blank">  
 <img style="position: absolute; top: 0; right: 0; border: 0;",
              src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
              alt="Fork me on GitHub"/>
@@ -223,23 +223,23 @@ plot_geo() %>%
 Highcharts provides support for mapping! The following minimal example shows how to create a world map using 
 
 ```{r}
-library(highcharter)
-library(dplyr)
-library(httr)
-library(jsonlite)
-
-world <- content(GET("http://code.highcharts.com/mapdata/custom/world-palestine-highres.geo.json"))
-# is text
-world <- fromJSON(world, simplifyVector = FALSE)
-
-highchart(type = "map") %>%
-  hc_chart(backgroundColor = "#161C20") %>% 
-  hc_add_series(mapData = world, showInLegend = FALSE, nullColor = "#424242",
-                borderWidth = 0)
+# library(highcharter)
+# library(dplyr)
+# library(httr)
+# library(jsonlite)
+# 
+# world <- content(GET("http://code.highcharts.com/mapdata/custom/world-palestine-highres.geo.json"))
+# # is text
+# world <- fromJSON(world, simplifyVector = FALSE)
+# 
+# highchart(type = "map") %>%
+#   hc_chart(backgroundColor = "#161C20") %>% 
+#   hc_add_series(mapData = world, showInLegend = FALSE, nullColor = "#424242",
+#                 borderWidth = 0)
 ```
 
 ```{r}
-hcmap("countries/us/us-ca-all") %>%
-  hc_title(text = "California")
+# hcmap("countries/us/us-ca-all") %>%
+#   hc_title(text = "California")
 ```
 

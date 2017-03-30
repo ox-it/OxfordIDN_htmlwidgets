@@ -24,13 +24,13 @@ library(htmltools)
 
 
 
-<!-- <a href="https://github.com/martinjhnhadley/OxfordIDN_htmlwidgets" target="blank">   -->
+<!-- <a href="https://github.com/ox-it/OxfordIDN_htmlwidgets" target="blank">   -->
 <!-- <img style="position: absolute; top: 0; right: 0; border: 0;", -->
 <!--              src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png", -->
 <!--              alt="Fork me on GitHub"/> -->
 <!-- </a> -->
 
-The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is documented at http://martinjhnhadley.github.io/OxfordIDN_htmlwidgets/charts/BarCharts.
+The interactive web is built on JavaScript, from interactive bar charts like the one below (move your cursor over the barchart) to the interactive maps provided by Google, Bing and other services. There is a relatively simple way to build these interactive charts directly from R and to host these online via RPubs, GitHub Pages or to include such interactive data visualisations within a Shiny app. Note that the specific code for this interactive chart is documented at http://ox-it.github.io/OxfordIDN_htmlwidgets/charts/BarCharts.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(highcharter)
@@ -88,7 +88,7 @@ Note that these guides were produced for the [Live Data Project](blogs.it.ox.ac.
 
 ## htmlwidget Comparisons
 
-A diverse (but not complete) comparison of the chart types and htmlwidget libraries available from CRAN is provided [here](http://martinjhnhadley.github.io/OxfordIDN_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
+A diverse (but not complete) comparison of the chart types and htmlwidget libraries available from CRAN is provided [here](http://ox-it.github.io/OxfordIDN_htmlwidgets/htmlwidget-comparisons) in addition to a number of interactive elements to assist in tool selection. 
 
 ## htmlwidget Templates
 

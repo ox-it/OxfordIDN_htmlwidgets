@@ -1,0 +1,376 @@
+---
+title: "Interactive Scatter Plots with htmlwidgets"
+author: "`r library(htmltools)
+HTML('<a href=http://idn.it.ox.ac.uk>Oxford University Interactive Data Network</a>')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    css: gh-pages_global/gh-pages_navbar.css
+    includes:
+      in_header: gh-pages_global/_navbar.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(htmltools)
+```
+
+
+
+<a href="https://github.com/martinjhnhadley/OxfordIDN_htmlwidgets" target="blank">  
+<img style="position: absolute; top: 0; right: 0; border: 0;",
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png",
+             alt="Fork me on GitHub"/>
+</a>
+
+
+# Highcharter scatter plots
+
+We want to make a chart with markers joined by lines with numeric axes. Things needed:
+
+- Distinct colour per line/marker
+- Legend
+- Name series
+
+## Get data
+
+```{r}
+library(plyr)
+library(tidyverse)
+
+
+## ===== data_fig_2 ==============================
+## ====================================================
+
+data_fig_3 <- read_tsv("data/thesaurus.fig4-red.tsv")
+colnames(data_fig_3) <- tolower(colnames(data_fig_3))
+
+data_fig_3 <- data_fig_3 %>%
+  select(na12882_2_s1.naive.baf,
+         na12882_s1.naive.baf) %>%
+  rename(x = na12882_2_s1.naive.baf,
+         y = na12882_s1.naive.baf) %>%
+  mutate(., group = rep(c("Type 1", "Type 2", "Type 3"), length.out = nrow(.))) %>%
+  mutate(color = plyr::mapvalues(group, unique(group), c("#1b9e77", "#d95f02", "#7570b3")))
+```
+
+
+## Opacity of points in highcharter
+
+In highcharts we give markers transparency, in order to provide opacity to the plot we must give the points a specific size and then modify the opactity of the circle.
+
+```{r}
+data_fig_3 <- data_fig_3 %>%
+  mutate(size = 4)
+
+highchart() %>%
+  hc_chart(type = "bubble") %>% 
+  hc_add_series(data = data_fig_3 %>%
+                  select(x,y, size),
+                name = "Foo",
+                color = "#1b9e77")
+
+```
+
+## hc_add_series
+
+In order to add these series we must do it programmatically, i.e. iteratively add lines to a hc object. This calls for the currently tidy dataset to be made wide using `spread`
+
+```{r}
+wide_data_fig_3 <- data_fig_3 %>%
+  select(x, y, group) %>%
+  mutate(., row = 1:nrow(.)) %>%
+  spread(group, y)
+```
+
+As of January 2017, the development version of `highcharter` has limited support for data.frames but the version available from CRAN is completely absent of these features. In order to plot a (x,y) pair series we must directly provide a "two-column list" as in the example below:
+
+```{r}
+x_y_z_data <- list(c(1,2,1) , c(3, 4,1))
+data1 <- list(list(1,2,1) , list(3, 4,1))
+data2 <- list(list(2,5,1) , list(1, 7,1), list(2, 5.18, 1))
+library(highcharter)
+highchart() %>%
+  hc_chart(type = "bubble") %>% 
+  hc_add_series(data = data1,
+                name = "Foo",
+                color = "#1b9e77") %>%
+  hc_add_series(data = data2,
+                color = "#d95f02",
+                name = "name") %>%
+  hc_plotOptions(series = list(animation = FALSE)) 
+```
+
+We must convert our data.frame into a `list(c(x,y), c(x2, y2))` structure, this is most easily achieved using the following approach:
+
+```{r}
+example_list <- list()
+example_list[[1]] <- c(10, 1)
+example_list
+```
+
+The `df_to_2d_lists` function below converts a data.frame into a list of 2d vectors:
+
+```{r}
+change_me <- wide_data_fig_2 %>%
+  select(af, X.MQ.1..Thesaurus) %>%
+  as.data.frame()
+df_to_2d_lists <- function(df){
+  output_list <- list()
+  
+  for(row in 1:nrow(df)){
+    output_list[[row]] <- unlist(df[row,], use.names = F)
+  }
+  output_list
+}
+df_to_2d_lists(change_me)
+```
+
+### Generating the chart
+
+```{r}
+colnames(traces_data) <- make.names(colnames(traces_data))
+
+  hc <- highchart()
+  lapply(trace_details[["safe.name"]],
+         function(safe.series.name){
+
+           hc <<- hc %>%
+             df_to_hc_xy_series(
+               data = traces_data,
+               x.column = f_text(viz.args$x.column),
+               trace = safe.series.name,
+               color = trace_details %>%
+                 filter(safe.name == safe.series.name) %>%
+                 select(color) %>%
+                 .[[1]],
+               name = trace_details %>%
+                 filter(safe.name == safe.series.name) %>%
+                 select(name) %>%
+                 .[[1]]
+             )
+
+         })
+```
+
+
+The final step in creating our chart is to specify the y-columns
+
+```{r}
+x_coords_col <- "af"
+df_to_hc_xy_series <- function(hc, series){
+  xy_series <- wide_data_fig_2 %>%
+  select_(x_coords_col, series) %>%
+    df_to_2d_lists()
+  hc_add_series(hc,
+                data = xy_series,
+                name = series)
+}
+highchart() %>%
+  df_to_hc_xy_series("X.MQ.1..Thesaurus") %>%
+  df_to_hc_xy_series("X.MQ.16..Local")
+```
+
+However, we need to supply our beautification arguments to this; both the real name of the series and the colours.
+
+```{r}
+colour_scheme <- data.frame(
+  series.name = c("[MQ 16] Local", #ff5b00
+             "[MQ 1] Local", #84002e
+             "[MQ 16] Thesaurus", #909090
+             "[MQ 1] Thesaurus", #2956b2
+             "Mutect" #7dbd00
+             ),
+  safe.name = make.names(c("[MQ 16] Local", #ff5b00
+             "[MQ 1] Local", #84002e
+             "[MQ 16] Thesaurus", #909090
+             "[MQ 1] Thesaurus", #2956b2
+             "Mutect" #7dbd00
+             )),
+  line.color = c("#ff5b00",
+            "#84002e",
+            "#909090",
+            "#2956b2",
+            "#7dbd00"),
+  stringsAsFactors = F
+)
+
+colour_scheme %>%
+  filter(series.name == "")
+
+
+x_coords_col <- "af"
+df_to_hc_xy_series <- function(hc, series){
+  xy_series <- wide_data_fig_2 %>%
+  select_(x_coords_col, series) %>%
+    df_to_2d_lists()
+  hc_add_series(hc,
+                data = xy_series,
+                name = series)
+}
+highchart() %>%
+  df_to_hc_xy_series("X.MQ.1..Thesaurus") %>%
+  df_to_hc_xy_series("X.MQ.16..Local")
+
+```
+
+
+# Custom toolip
+
+To begin, let's start with a handcrafter example:
+
+```{r}
+handcrafted <- list(
+  list(x = 1, y = 2, z = 5, myData = "2 dd"),
+  list(x = 3, y = 6, z = 5, myData = "4 ddd")
+)
+
+highchart() %>%
+  hc_add_series(
+    data = handcrafted,
+    type = "bubble",
+    name = "Concordant",
+    color = rgb(203, 24, 29, 0.8, max = 255),
+    marker = list(fillOpacity = 0.2)
+  ) %>%
+  hc_tooltip(
+        formatter = JS(
+          "function(){
+                console.log(this);
+                    return  '<b>x: </b>' + this.x +
+                            '<br/>' +
+                            '<b>y: </b>' + this.x +
+                            '<br/>' +
+                            '<b>myData: </b>' + this.point.myData ;
+            }"
+        )
+        )
+```
+
+This function converts a data.frame into an appropriately structured list:
+
+```{r}
+df_to_3d_lists_2 <- function(df) {
+  
+  if(!all(c("x","y") %in% colnames(df))){
+    stop("Conversion to lists requires x, y columns")
+  }
+  
+  output_list <- list()
+  
+  for (row in 1:nrow(df)) {
+    output_list[[row]] <-
+      # append(setNames(unlist(df[row,], use.names = F), c("x", "y", "myData")),
+      #        c("size" = 1), after = 2) %>%
+      # as.list()
+      append(df[row,],list(z = 1)) # non-zero size
+  } 
+  output_list
+}
+```
+
+
+Here is some slightly
+
+```{r}
+manufactored_data <- data.frame(
+  x = rnorm(100),
+  y = rnorm(100),
+  type = rep(c("a","b","c","d"), 25),
+  myData = "foo: goo",
+  stringsAsFactors = F
+)
+
+append(manufactored_data[1,],list(z = 1))
+
+manufactored_data <- manufactored_data %>%
+  select(x, y, myData) %>%
+  df_to_3d_lists_2()
+
+highchart() %>%
+  hc_add_series(
+    data = manufactored_data,
+    type = "bubble",
+    name = "Concordant",
+    color = rgb(203, 24, 29, 0.8, max = 255),
+    marker = list(fillOpacity = 0.2)
+  ) %>%
+  hc_tooltip(
+        formatter = JS(
+          "function(){
+                console.log(this);
+                    return  '<b>x: </b>' + this.x +
+                            '<br/>' +
+                            '<b>y: </b>' + this.x +
+                            '<br/>' +
+                            '<b>myData: </b>' + this.point.myData ;
+            }"
+        )
+        )
+
+```
+
+And here's some real data!
+
+```{r}
+data_fig_4_red <- read_tsv("data/thesaurus.fig4-red.tsv")
+colnames(data_fig_4_red) <- tolower(colnames(data_fig_4_red))
+
+data_fig_4_red <- data_fig_4_red %>%
+  mutate(color = plyr::mapvalues(
+    type,
+    from = c("Discordant", "Concordant"),
+    to = c(rgb(251, 106, 74, 0.8, max = 255), rgb(203, 24, 29, 0.8, max = 255))
+  )) %>%
+  mutate(chromosome = paste("Chromosome: ", paste0(chr, ":", position)))
+
+wide_data_fig_4 <- data_fig_4_red %>%
+  select(na12882_2_s1.naive.baf, # x
+         na12882_s1.naive.baf, # y
+         type,
+         chromosome) %>%
+  spread(type, na12882_s1.naive.baf)
+
+mass_produced_concordant <- wide_data_fig_4 %>%
+  select(na12882_2_s1.naive.baf,
+         Concordant,
+         chromosome) %>%
+  na.omit() %>%
+  rename(x = na12882_2_s1.naive.baf,
+         y = Concordant) %>%
+  df_to_3d_lists_2()
+
+highchart() %>%
+  hc_add_series(
+    data = mass_produced_concordant,
+    type = "bubble",
+    name = "Concordant",
+    color = rgb(203, 24, 29, 0.8, max = 255),
+    marker = list(fillOpacity = 0.2)
+  ) %>%
+  hc_tooltip(
+        formatter = JS(
+          "function(){
+                console.log(this);
+                    return  '<b>x: </b>' + this.x +
+                            '<br/>' +
+                            '<b>y: </b>' + this.x +
+                            '<br/>' +
+                            '<b>myData: </b>' + this.point.chromosome ;
+            }"
+        )
+        )
+
+```
+
+
+
+
+
+

@@ -101,20 +101,36 @@ leaflet() %>%
   addPolylines(data = geo_lines)
 ```
 
-The above visualisation is very unattractive because multiple lines have been placed upon one another, however it is fairly easy to fix this by modifying the data with dplyr.
+The above visualisation is very unattractive because multiple lines have been placed upon one another, and there are a lot of journies! We'll use `sample_frac` to sample 30% of the journies
 
 ```{r}
-unique_journies <- data_geo_lines_map %>%
+sample_journies <- data_geo_lines_map %>%
   group_by(sender.latitude, sender.longitude, receiver.latitude, receiver.longitude) %>%
   mutate(total.letters = sum(number.of.letters)) %>%
   ungroup() %>%
   select(-number.of.letters, -date) %>%
-  unique()
-library(knitr)
-kable(head(iris), format = "html")
+  unique() %>%
+  sample_frac(0.3)
+sample_geo_lines <- gcIntermediate(
+  sample_journies %>%
+  select(sender.longitude, sender.latitude),
+  sample_journies %>%
+  select(receiver.longitude, receiver.latitude),
+  sp = TRUE, # SpatialLines are what Leaflet wants
+  addStartEnd = TRUE, # By default this is FALSE, and would be inaccurate
+  n = 50 # number of intermediate points
+  )
 ```
 
-There are `r nrow(data_geo_lines_map) - nrow(unique_journies)` fewer lines when duplicates are removed, 
+There are `r nrow(data_geo_lines_map) - nrow(unique_journies)` fewer lines on the map, and some beautification of the lines makes them easier to distinguish:
+
+```{r}
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = sample_geo_lines,
+               color = "#2c7bb6",
+               weight = 4)
+```
 
 ## End-points
 
@@ -128,7 +144,7 @@ Using `dplyr`, we can compute the groups of points described above:
 
 ```{r}
 library(tidyr) # using for separate
-send_receive_points <- data_geo_lines_map %>%
+send_receive_points <- sample_journies %>%
   mutate(send = paste(sender.latitude, sender.longitude)) %>%
   mutate(receive = paste(receiver.latitude, receiver.longitude)) %>%
   select(send, receive) %>%
@@ -162,7 +178,7 @@ These may then be provided to the `leaflet` map as different markers:
 ```{r}
 leaflet() %>%
   addTiles() %>%
-  addPolylines(data = geo_lines, color = "#decbe4", opacity = 0.2) %>%
+  addPolylines(data = sample_geo_lines, color = "#2c7bb6", opacity = 0.2) %>%
   addCircleMarkers(
     data = only_send,
     fill = FALSE,
@@ -194,6 +210,9 @@ leaflet() %>%
   )
 ```
 
+## End-points legends
+
+It's necessary to create a custom legend for 
 
 # Plotly
 

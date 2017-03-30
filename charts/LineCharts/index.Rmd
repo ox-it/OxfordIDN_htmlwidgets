@@ -46,3 +46,240 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+# Highcharter line charts
+
+We want to make a chart with markers joined by lines with numeric axes. Things needed:
+
+- Distinct colour per line/marker
+- Legend
+- Name series
+
+## Get data
+
+```{r}
+library(plyr)
+library(dplyr)
+library(readr)
+library(tidyr)
+
+
+## ===== data_fig_2 ==============================
+## ====================================================
+
+data_fig_2 <- read_tsv("data/thesaurus.fig2.tsv")
+colnames(data_fig_2) <- tolower(colnames(data_fig_2))
+
+# Compute safe.names for later
+
+colour_scheme <- data.frame(
+  series.name = c("[MQ 16] Local", #ff5b00
+             "[MQ 1] Local", #84002e
+             "[MQ 16] Thesaurus", #909090
+             "[MQ 1] Thesaurus", #2956b2
+             "Mutect" #7dbd00
+             ),
+  safe.name = make.names(c("[MQ 16] Local", #ff5b00
+             "[MQ 1] Local", #84002e
+             "[MQ 16] Thesaurus", #909090
+             "[MQ 1] Thesaurus", #2956b2
+             "Mutect" #7dbd00
+             )),
+  line.color = c("#ff5b00",
+            "#84002e",
+            "#909090",
+            "#2956b2",
+            "#7dbd00"),
+  stringsAsFactors = F
+)
+
+data_fig_2 <- data_fig_2 %>%
+  mutate(line.colour = mapvalues(series, from = colour_scheme$series.name, to = colour_scheme$line.color))
+```
+
+
+## hc_add_series_df
+
+When using hc_add_series_df you must be careful NOT to have a column heading called "series". 
+
+```{r}
+data_fig_2 <- data_fig_2 %>%
+  rename(type = series)
+```
+
+This will make a line chart with markers, but our selected colours are NOT included. In fact, they cannot be so and the developer of the library says "Highcharter is not so clever as ggplot2" [https://github.com/jbkunst/highcharter/issues/180#issuecomment-246787594](https://github.com/jbkunst/highcharter/issues/180#issuecomment-246787594).
+
+```{r}
+library(highcharter)
+highchart() %>%
+  hc_add_series_df(
+    data = data_fig_2,
+    type = "line",
+    x = af,
+    y = tpr,
+    group = type,
+    color = colorize(type, colour_scheme$line.color))
+```
+
+This doesn't work either
+
+```{r}
+highchart() %>%
+  hc_chart(type = "scatter") %>%
+  hc_add_series_df(
+    data = data_fig_2,
+    type = "scatter",
+    x = af,
+    y = tpr,
+    group = type,
+    color = mapvalues(type, from = colour_scheme$series.name, to = colour_scheme$line.color)
+    )
+```
+
+
+## hc_add_series
+
+In order to add these series we must do it programmatically, i.e. iteratively add lines to a hc object. This calls for the currently tidy dataset to be made wide using `spread`
+
+```{r}
+wide_data_fig_2 <- data_fig_2 %>%
+  select(type, af, tpr) %>%
+  spread(type, tpr)
+## Make column names safe for use:
+colnames(wide_data_fig_2) <- make.names(colnames(wide_data_fig_2))
+```
+
+As of January 2017, the development version of `highcharter` has limited support for data.frames but the version available from CRAN is completely absent of these features. In order to plot a (x,y) pair series we must directly provide a "two-column list" as in the example below:
+
+```{r}
+x_y_data <- list(c(1,2) , c(3, 4))
+data1 <- list(list(1,2) , list(3, 4))
+data2 <- list(list(2,5) , list(1, 7))
+
+highchart() %>%
+  hc_chart(type = "line") %>% 
+  hc_add_series(data = data1,
+                name = "Foo",
+                color = "#1b9e77") %>%
+  hc_add_series(data = list(list(2,5) , list(1, 7)),
+                color = "#d95f02",
+                name = "name") %>%
+  hc_plotOptions(series = list(animation = FALSE)) 
+```
+
+We must convert our data.frame into a `list(c(x,y), c(x2, y2))` structure, this is most easily achieved using the following approach:
+
+```{r}
+example_list <- list()
+example_list[[1]] <- c(10, 1)
+example_list
+```
+
+The `df_to_2d_lists` function below converts a data.frame into a list of 2d vectors:
+
+```{r}
+change_me <- wide_data_fig_2 %>%
+  select(af, X.MQ.1..Thesaurus) %>%
+  as.data.frame()
+df_to_2d_lists <- function(df){
+  output_list <- list()
+  
+  for(row in 1:nrow(df)){
+    output_list[[row]] <- unlist(df[row,], use.names = F)
+  }
+  output_list
+}
+df_to_2d_lists(change_me)
+```
+
+### Generating the chart
+
+```{r}
+colnames(traces_data) <- make.names(colnames(traces_data))
+
+  hc <- highchart()
+  lapply(trace_details[["safe.name"]],
+         function(safe.series.name){
+
+           hc <<- hc %>%
+             df_to_hc_xy_series(
+               data = traces_data,
+               x.column = f_text(viz.args$x.column),
+               trace = safe.series.name,
+               color = trace_details %>%
+                 filter(safe.name == safe.series.name) %>%
+                 select(color) %>%
+                 .[[1]],
+               name = trace_details %>%
+                 filter(safe.name == safe.series.name) %>%
+                 select(name) %>%
+                 .[[1]]
+             )
+
+         })
+```
+
+
+The final step in creating our chart is to specify the y-columns
+
+```{r}
+x_coords_col <- "af"
+df_to_hc_xy_series <- function(hc, series){
+  xy_series <- wide_data_fig_2 %>%
+  select_(x_coords_col, series) %>%
+    df_to_2d_lists()
+  hc_add_series(hc,
+                data = xy_series,
+                name = series)
+}
+highchart() %>%
+  df_to_hc_xy_series("X.MQ.1..Thesaurus") %>%
+  df_to_hc_xy_series("X.MQ.16..Local")
+```
+
+However, we need to supply our beautification arguments to this; both the real name of the series and the colours.
+
+```{r}
+colour_scheme <- data.frame(
+  series.name = c("[MQ 16] Local", #ff5b00
+             "[MQ 1] Local", #84002e
+             "[MQ 16] Thesaurus", #909090
+             "[MQ 1] Thesaurus", #2956b2
+             "Mutect" #7dbd00
+             ),
+  safe.name = make.names(c("[MQ 16] Local", #ff5b00
+             "[MQ 1] Local", #84002e
+             "[MQ 16] Thesaurus", #909090
+             "[MQ 1] Thesaurus", #2956b2
+             "Mutect" #7dbd00
+             )),
+  line.color = c("#ff5b00",
+            "#84002e",
+            "#909090",
+            "#2956b2",
+            "#7dbd00"),
+  stringsAsFactors = F
+)
+
+colour_scheme %>%
+  filter(series.name == "")
+
+
+x_coords_col <- "af"
+df_to_hc_xy_series <- function(hc, series){
+  xy_series <- wide_data_fig_2 %>%
+  select_(x_coords_col, series) %>%
+    df_to_2d_lists()
+  hc_add_series(hc,
+                data = xy_series,
+                name = series)
+}
+highchart() %>%
+  df_to_hc_xy_series("X.MQ.1..Thesaurus") %>%
+  df_to_hc_xy_series("X.MQ.16..Local")
+
+```
+
+
+
